@@ -11,7 +11,12 @@
     <h1>Obchod</h1>
     <h2>Ahoj</h2>
     <p>Přihlášený hráč: {{ user }}</p>
-    <button>RESET NABÍDKY</button>
+
+    <form method="POST" action="{% url 'shop-reset-url' %}">
+        {% csrf_token %}
+      <button type="submit">RESETOVAT NABÍDKU</button>
+  </form>
+
     <h2>Nabídka zboží</h2>
     {% for item in items_in_shop %}
         <div>
