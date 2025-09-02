@@ -32,3 +32,9 @@ def shop_reset(request):
 
     return redirect(reverse('shop-url'))
 
+def shop_buy(request, item_id):
+    print(f"Spuštění funkce nákupu položky: {item_id}")
+    user = request.user
+    item = ShopOffer.objects.get(id=item_id)
+    # Zde by měla být logika pro zpracování nákupu položky
+    return redirect(reverse('shop-url'))

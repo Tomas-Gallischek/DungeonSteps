@@ -12,16 +12,17 @@ def full_shop(request):
     item_id = 1
     for one in range(6):
         print(f"Spuštění generování položek")
-        item_type = random.choice(typy_itemu)[0]
-
+# ZÁKLADNÍ NASTAVENÍ A INPORTY
         user = request.user
         new_item = user.shop_offers.create()
-
         result, weapon_name, weapon_description, weapon_level_required, weapon_level_stop, weapon_type, base_dmg, weapon_dmg_min, weapon_dmg_max, pocet_slotu, weapon_price = weapons.weapons_generator(request)
-    # PRO VŠECHNY STEJNÉ
-        item_id = 1 + one
+# GENEROVÁNÍ UNIKÁTNÍHO ID
+        item_id_generace = [str(weapon_level_required), str(weapon_level_stop), str(base_dmg), str(weapon_dmg_min), str(weapon_dmg_max), str(pocet_slotu), str(weapon_price), str(random.randint(1, 99))]
+        id_conver_number = "".join(item_id_generace)
+        item_id = int(id_conver_number)
+# uložení vygenerovaného itemu do databáze
         new_item.item_id = item_id
-        print(f"Zvyšování ID položky")
+        item_type = random.choice(typy_itemu)[0]
         new_item.item_type = item_type
         print(f"Nastavení typu položky: {item_type}")
         new_item.item_name = weapon_name
