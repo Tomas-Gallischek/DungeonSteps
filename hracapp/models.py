@@ -98,13 +98,6 @@ class Atributs(models.Model):
 
     dmg_atribut = models.CharField(max_length=20, choices=Playerinfo.ATRIBUTS_CHOICES, blank=True, null=True)
 
-class INV(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='inventory', blank=True)
-
-
-class EQP(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='equipment', blank=True)
-
 
 class Character_bonus(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='character_bonus', blank=True)
@@ -113,7 +106,43 @@ class Character_bonus(models.Model):
 class ShopOffer(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='shop_offers', blank=True)
     item_id = models.IntegerField(default=1, blank=True)
-    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES)
+    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True)
+    item_name = models.CharField(max_length=100, blank=True)
+    item_price = models.PositiveIntegerField(blank=True, default=1)
+    item_description = models.TextField(blank=True)
+    item_level_required = models.PositiveIntegerField(blank=True, default=1)
+    item_level_stop = models.PositiveIntegerField(blank=True, default=1)
+    item_weapon_type = models.CharField(max_length=20, blank=True, default=1)
+    item_base_damage = models.PositiveIntegerField(blank=True, default=1)
+    item_min_damage = models.PositiveIntegerField(blank=True, default=1)
+    item_max_damage = models.PositiveIntegerField(blank=True, default=1)
+    item_slots = models.PositiveIntegerField(blank=True, default=1)
+
+    def __str__(self):
+        return f"{self.item_name} (Cena: {self.item_price} zlaťáků)"
+    
+class INV(models.Model):
+    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='inventory', blank=True)
+    item_id = models.IntegerField(default=1, blank=True)
+    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True)
+    item_name = models.CharField(max_length=100, blank=True)
+    item_price = models.PositiveIntegerField(blank=True, default=1)
+    item_description = models.TextField(blank=True)
+    item_level_required = models.PositiveIntegerField(blank=True, default=1)
+    item_level_stop = models.PositiveIntegerField(blank=True, default=1)
+    item_weapon_type = models.CharField(max_length=20, blank=True, default=1)
+    item_base_damage = models.PositiveIntegerField(blank=True, default=1)
+    item_min_damage = models.PositiveIntegerField(blank=True, default=1)
+    item_max_damage = models.PositiveIntegerField(blank=True, default=1)
+    item_slots = models.PositiveIntegerField(blank=True, default=1)
+
+    def __str__(self):
+        return f"{self.item_name} (Cena: {self.item_price} zlaťáků)"
+
+class EQP(models.Model):
+    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='equipment', blank=True)
+    item_id = models.IntegerField(default=1, blank=True)
+    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True)
     item_name = models.CharField(max_length=100, blank=True)
     item_price = models.PositiveIntegerField(blank=True, default=1)
     item_description = models.TextField(blank=True)
