@@ -43,7 +43,7 @@ def profile(request):
         action = request.POST.get('action')
         if action == 'collect_gold':
             user = request.user
-            user_gold = user.economy.first()
+            user_gold = user.economy
             user_gold.gold += collected_gold
             user_gold.last_gold_collection = timezone.now()
             user_gold.save()
@@ -59,7 +59,7 @@ def profile(request):
         'lvl_next': lvl_next,
         'XP_potrebne_next': XP_potrebne_next,
     # GOLDY
-        'gold_own': request.user.economy.first().gold,
+        'gold_own': request.user.economy.gold,
         'collected_gold': collected_gold,
         'gold_growth_coefficient': gold_growth_coefficient,
         'gold_limit': gold_limit,
@@ -146,8 +146,8 @@ def update_attribute(request):
             if attribute_to_update in valid_attributes:
 
                 user = request.user
-                user_gold = user.economy.first()
-                user_atributs = user.atributy.first()
+                user_gold = user.economy
+                user_atributs = user.atributy
 
                 # Získáme aktuální ceny
                 current_prices = atributy_cena(request)

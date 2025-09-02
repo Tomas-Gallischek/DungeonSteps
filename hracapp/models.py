@@ -56,19 +56,19 @@ def __str__(self):
 
 # VŠECHNY VNOŘENÉ DATABÁZE
 class XP_LVL(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='xp_lvl', blank=True)
+    hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='xp_lvl', blank=True)
     lvl = models.IntegerField(("Úroveň"), default=1, blank=True, null=True)
     xp = models.IntegerField(("Zkušenosti"), default=0, blank=True, null=True)
 
 
 class Economy(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='economy', blank=True)
+    hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='economy', blank=True)
     gold = models.IntegerField(("Počet GOLDŮ"), default=1)
     rohlik = models.IntegerField(("Počet ROHLÍKŮ"), default=1)
     gold_growth_coefficient = models.FloatField(("Koeficient růstu GOLDŮ"), default=1.0)
     last_gold_collection = models.DateTimeField(blank=True, null=True, default=timezone.now)
 class Atributs(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='atributy', blank=True)
+    hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='atributy', blank=True)
     HP = models.IntegerField(("Počet životů"), default=10, blank=True, null=True)
     hp_bonus = models.FloatField(("Bonus k životům"), default=1, blank=True, null=True)
 

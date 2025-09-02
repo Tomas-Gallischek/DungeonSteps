@@ -6,7 +6,7 @@ from django.contrib.auth import login
 @login_required
 def povolani_bonus(request):
     user = request.user
-    atributy_hrace = user.atributy.first()
+    atributy_hrace = user.atributy
 
     # SÍLA (DMG -> MID -> TANK)
     if user.povolani == 'Paladin' or user.povolani == 'paladin':

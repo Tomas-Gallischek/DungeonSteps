@@ -4,7 +4,7 @@ from django.utils import timezone
 @login_required
 def atributy_hodnota(request):
     user = request.user
-    user = user.atributy.first()
+    user = user.atributy
 
     # ŽIVOTY
     base_hp = 10
@@ -130,20 +130,20 @@ def calculate_xp_and_level(request):
 
 def calculate_gold(request):
     user = request.user
-    user_lvl = user.xp_lvl.first()
-    user_gold = user.economy.first()
+    user_lvl = user.xp_lvl
+    user_gold = user.economy
 # PRVNĚ SE MUSÍ ZJISTIT JESTLI HRÁČ UŽ JE REGISTROVANÝ NEBO NE. POKUD NENÍ, MUSÍ SE MU VYTVOŘIT ZÁZNAM V DATABÁZI
     if user_lvl is None:
         user_lvl = user.xp_lvl.create(lvl=1, xp=0)
         user_lvl.save()
     else:
-        user_lvl = user.xp_lvl.first()
+        user_lvl = user.xp_lvl
 
     if user_gold is None:
         user_gold = user.economy.create(gold=0, rohlik=0, gold_growth_coefficient=0.1, last_gold_collection=timezone.now())
         user_gold.save()
     else:
-        user_gold = user.economy.first()
+        user_gold = user.economy
 
     user_gold_update = 0.1 + (user_lvl.lvl * 0.1)
 

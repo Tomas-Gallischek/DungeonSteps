@@ -12,7 +12,7 @@ def weapons_generator(request):
     from itemsapp.models import Weapons
     user = request.user
     user_name = user.username
-    user = user.xp_lvl.first()
+    user = user.xp_lvl
     user_lvl = user.lvl
     print(f"{GREEN}Weapon generator SPUŠTĚNÝ{RESET}")
     print(f"{GREEN}Načtení uživatele: {user_name}, Úroveň uživatele: {user_lvl}{RESET}")

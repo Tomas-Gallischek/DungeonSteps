@@ -3,7 +3,7 @@ import random
 
 def iniciace(request):
     user = request.user
-    atributy = user.atributy.first()
+    atributy = user.atributy
     inicial_number = round((atributy.suma_charisma * 4) / (user.lvl), 2) # <-- % ŠANCE NA INICIATIVU (maximální honota 100 tj. 100%)
     if inicial_number > 100:
         inicial_number = 100
@@ -11,7 +11,7 @@ def iniciace(request):
 
 def fight_off(request):
     user = request.user
-    atributy = user.atributy.first()
+    atributy = user.atributy
     # ATRIBUTY POSTAVY (pouze výpis)
     strength = atributy.suma_strength # POŠKOZENÍ TĚŽKÝMI ZBRANĚMI
     dexterity = atributy.suma_dexterity # POŠKOZENÍ LEHKÝMI ZBRANĚMI
@@ -50,7 +50,7 @@ def fight_off(request):
 
 def fight_def(request):
     user = request.user
-    atributy = user.atributy.first()
+    atributy = user.atributy
 
     # ATRIBUTY POSTAVY (pouze výpis)
     strength = atributy.suma_strength # REZISTENCE PROTI TĚŽKÝM ZBRANÍM
