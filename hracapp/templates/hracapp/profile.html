@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <form method="POST" action="{% url 'logout-url' %}">
+        {% csrf_token %}
+      <button type="submit">Odhlásit se</button>
+  </form>
+
+  <h1>{{ request.user.username }}</h1>
+  <p>Aktuální úroveň: {{ lvl_aktual }}</p>
+  <p>Potřebné XP pro další úroveň: {{ XP_potrebne_next }}</p>
+  <p>Našetřeno XP: {{ XP_aktual }}</p>
+
+<p>HP: <span id="hp-value">{{ suma_hp }}</span></p>
+
+{% if weapon_typ == "heavy" %}
+<b>Síla: <span id="strength-value">{{ suma_strength }}</span> <button class="plus-button" data-attribute="strength">+</button></p></b>
+Cena: <span id="cena-strength">{{ strength_cost }}</span> goldů<br><p>
+Průměrné poškození: {{ center_dmg }}<br>
+Odolnost proti těžkým zbraním: {{ heavy_res }}%<br>
+
+<p>Inteligence: <span id="intelligence-value">{{ suma_intelligence }}</span> <button class="plus-button" data-attribute="intelligence">+</button></p>
+Cena: <span id="cena-intelligence">{{ intelligence_cost }}</span> goldů<br>
+odolnost proti magickým zbraním: {{ magic_res }}%<br>
+
+<p>Obratnost: <span id="dexterity-value">{{ suma_dexterity }}</span> <button class="plus-button" data-attribute="dexterity">+</button></p>
+Cena: <span id="cena-dexterity">{{ dexterity_cost }}</span> goldů<br>
+Odolnost proti lehkým zbraním: {{ light_res }}%<br>
+
+{% elif weapon_typ == "light" %}
+<p>Obratnost: <span id="dexterity-value">{{ suma_dexterity }}</span> <button class="plus-button" data-attribute="dexterity">+</button></p>
+Cena: <span id="cena-dexterity">{{ dexterity_cost }}</span> goldů<br>
+Průměrné poškození: {{ center_dmg }}<br>
+Odolnost proti lehkým zbraním: {{ light_res }}%<br>
+
+<b>Síla: <span id="strength-value">{{ suma_strength }}</span> <button class="plus-button" data-attribute="strength">+</button></p>
+Cena: <span id="cena-strength">{{ strength_cost }}</span> goldů<br></b><p>
+Odolnost proti těžkým zbraním: {{ heavy_res }}%<br>
+
+<p>Inteligence: <span id="intelligence-value">{{ suma_intelligence }}</span> <button class="plus-button" data-attribute="intelligence">+</button></p>
+Cena: <span id="cena-intelligence">{{ intelligence_cost }}</span> goldů<br>
+Odolnost proti magickým zbraním: {{ magic_res }}%<br>
+
+{% elif weapon_typ == "magic" %}
+<p>Inteligence: <span id="intelligence-value">{{ suma_intelligence }}</span> <button class="plus-button" data-attribute="intelligence">+</button></p>
+Cena: <span id="cena-intelligence">{{ intelligence_cost }}</span> goldů<br>
+Průměrné poškození: {{ center_dmg }}<br>
+Odolnost proti magickým zbraním: {{ magic_res }}%<br>
+
+<b>Síla: <span id="strength-value">{{ suma_strength }}</span> <button class="plus-button" data-attribute="strength">+</button></p>
+Cena: <span id="cena-strength">{{ strength_cost }}</span> goldů<br></b><p>
+Odolnost proti těžkým zbraním: {{ heavy_res }}%<br>
+
+<p>Obratnost: <span id="dexterity-value">{{ suma_dexterity }}</span> <button class="plus-button" data-attribute="dexterity">+</button></p>
+Cena: <span id="cena-dexterity">{{ dexterity_cost }}</span> goldů<br>
+Odolnost proti lehkým zbraním: {{ light_res }}%<br>
+
+{% endif %}
+
+<p>Vitalita: <span id="vitality-value">{{ suma_vitality }}</span> <button class="plus-button" data-attribute="vitality">+</button></p>
+Cena: <span id="cena-vitality">{{ vitality_cost }}</span> goldů<br>
+
+
+<p>Charisma: <span id="charisma-value">{{ suma_charisma }}</span> <button class="plus-button" data-attribute="charisma">+</button></p>
+Cena: <span id="cena-charisma">{{ charisma_cost }}</span> goldů<br>
+Šance na první úder: {{ inicial_number }}%<br>
+
+<p>Zručnost: <span id="luck-value">{{ suma_luck }}</span> <button class="plus-button" data-attribute="luck">+</button></p>
+Cena: <span id="cena-luck">{{ luck_cost }}</span> goldů<br>
+Šance na kritický zásah: {{ crit_chance }}%<br>
+
+  <ul>
+    <li>Kroky: {{ steps }}</li>
+    <li>Goldy: <span id="gold-value">{{ gold_own }}</span></li>
+  </ul>
+  <hr>
+
+  <h2>Sběr goldů</h2>
+  <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="collect_gold">
+      <p>Máte k dispozici k sebrání: <span id="collected-gold">{{ collected_gold }}</span> goldů.</p>
+      <p>Maximální počet goldů: {{ gold_limit }} / 8h</p>
+      <p>Goldy za hodinu: {{ gold_per_hour }} / h</p>
+      <button type="submit">Vybrat goldy</button>
+  </form>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div id="error-message" class="alert alert-danger d-none mt-3" role="alert"></div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {  
+        // Skript pro vylepšení atributů
+        const upgradeButtons = document.querySelectorAll('.plus-button');
+        const goldValueElement = document.getElementById('gold-value');
+        const errorMessageElement = document.getElementById('error-message');
+        const hpValueElement = document.getElementById('hp-value');
+
+        upgradeButtons.forEach(button => {
+            button.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const attributeName = e.target.dataset.attribute;
+                errorMessageElement.classList.add('d-none');
+                errorMessageElement.textContent = '';
+                const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+                try {
+                    const response = await fetch('{% url "upgrade-attribute-url" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ attribute: attributeName })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const attributeSpan = document.getElementById(`${attributeName}-value`);
+                        if (attributeSpan) {
+                            attributeSpan.textContent = data.new_value;
+                        }
+                        
+                        if (data.new_prices) {
+                            for (const price_attribute in data.new_prices) {
+                                const priceSpan = document.getElementById('cena-' + price_attribute.replace('_cost', ''));
+                                if (priceSpan) {
+                                    priceSpan.textContent = data.new_prices[price_attribute];
+                                }
+                            }
+                        }
+                        
+                        if (goldValueElement) {
+                            goldValueElement.textContent = data.new_golds;
+                        }
+                        if (hpValueElement) {
+                           hpValueElement.textContent = data.new_hp;
+                        }
+                    } else {
+                        errorMessageElement.textContent = data.error;
+                        errorMessageElement.classList.remove('d-none');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorMessageElement.textContent = 'Při aktualizaci atributu došlo k chybě.';
+                    errorMessageElement.classList.remove('d-none');
+                }
+            });
+        });
+
+    });
+</script>
+
+
+{% endblock content %}

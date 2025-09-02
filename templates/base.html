@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+    {% block styles %}{% endblock styles %}
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url "index" %}">ÚVODNÍ STRANA</a></li>
+                <li><a href="{% url "login-url" %}">PŘIHLÁŠENÍ</a></li>
+                <li><a href="{% url "register-url" %}">REGISTRACE</a></li>
+                <li><a href="{% url "profile-url" %}">PROFIL</a></li>
+                <li><a href="{% url "update-steps-url" %}">AKTUALIZACE KROKŮ</a></li>
+                <li><a href="{% url "shop-url" %}">OBCHOD</a></li>
+            </ul>
+        </nav>
+    </header>
+    {% block content %}{% endblock content %}
+</body>
+</html>

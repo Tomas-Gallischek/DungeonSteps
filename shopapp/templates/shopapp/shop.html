@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+{% block content %}
+    <h1>Obchod</h1>
+    <p>Přihlášený hráč: {{ user }}</p>
+    <h2>Nabídka zboží</h2>
+    {% for item in items_in_shop %}
+        <div>
+            <h3>{{ item.item_name }}</h3>
+            <p>ID položky: {{ item.item_id }}</p>
+            <p>{{ item.item_description }}</p>
+            <p>Úroveň požadovaná: {{ item.item_level_required }}</p>
+            <p>Úroveň zastavení: {{ item.item_level_stop }}</p>
+            <p>Cena: {{ item.item_price }} zlaťáků</p>
+
+        </div>
+    {% endfor %}
+{% endblock %}
+</body>
+</html>
