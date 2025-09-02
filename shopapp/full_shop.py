@@ -7,8 +7,7 @@ from hracapp.models import Playerinfo
 def full_shop(request):
     print(f"Spuštění funkce naplnění obchodu")
     # Smazání všech existujících nabídek
-
-
+    request.user.shop_offers.all().delete()
     typy_itemu = ['weapon']
     item_id = 1
     for one in range(6):

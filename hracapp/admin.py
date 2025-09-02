@@ -2,8 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import Playerinfo, XP_LVL, Economy, Atributs, INV, EQP, Character_bonus, ShopOffer
 
-admin.site.register(Playerinfo)
-
 # Inlines pro související modely
 class XPLVLInline(admin.TabularInline):
     model = XP_LVL
@@ -40,7 +38,9 @@ class ShopOfferInline(admin.TabularInline):
     can_delete = False
     verbose_name_plural = 'Nabídky obchodu'
 
-# Vlastní Admin třída pro Playerinfo
+# Vlastní Admin třída pro Playerinfo s inlines.
+# Dekorátor @admin.register(Playerinfo) zajistí správnou registraci.
+@admin.register(Playerinfo)
 class PlayerinfoAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         (None, {'fields': ('name', 'surname', 'gender', 'steps', 'rasa', 'povolani')}),
@@ -50,7 +50,3 @@ class PlayerinfoAdmin(UserAdmin):
     )
     list_display = UserAdmin.list_display + ('name', 'surname', 'gender', 'steps', 'rasa', 'povolani')
     inlines = [XPLVLInline, EconomyInline, AtributsInline, INVInline, EQPInline, CharacterBonusInline, ShopOfferInline]
-
-# Zruš stávající registraci a zaregistruj novou
-admin.site.unregister(Playerinfo)
-admin.site.register(Playerinfo, PlayerinfoAdmin)
