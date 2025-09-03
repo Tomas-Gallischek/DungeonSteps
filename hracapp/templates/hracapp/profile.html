@@ -70,6 +70,23 @@ Cena: <span id="cena-charisma">{{ charisma_cost }}</span> goldů<br>
 Cena: <span id="cena-luck">{{ luck_cost }}</span> goldů<br>
 Šance na kritický zásah: {{ crit_chance }}%<br>
 
+<h1>INVENTÁŘ</h1>
+{% for item in inventory_items %}
+    <p>Název: {{ item.item_name }}</p>
+    <p>Cena: {{ item.item_price }} goldů</p>
+    <form method="POST" action="{% url 'eqp-url' item.item_id %}">
+        {% csrf_token %}
+    <button type="submit">Nasadit</button>
+    </form>
+{% endfor %}
+
+<h1>EQUIP</h1>
+{% for item in equipment_items %}
+    <p>Název: {{ item.item_name }}</p>
+    <p>Cena: {{ item.item_price }} goldů</p>
+{% endfor %}
+
+
   <ul>
     <li>Kroky: {{ steps }}</li>
     <li>Goldy: <span id="gold-value">{{ gold_own }}</span></li>

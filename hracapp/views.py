@@ -2,6 +2,7 @@ from hmac import new
 import json
 from django.contrib.auth import logout
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render, redirect
 from .off_deff import fight_def, fight_off, iniciace
@@ -11,6 +12,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
 from .utils import calculate_xp_and_level, calculate_gold, atributy_hodnota, atributy_cena
+from . models import EQP, INV
 
 
 @login_required
@@ -19,22 +21,28 @@ def profile(request):
     povolani_bonus(request)
     rasa_bonus(request)
 
-    # Volání funkce pro atributy
+# Volání funkce pro atributy
     hp_bonus_vitality, suma_atributy, base_atributy, plus_atributy, plus_strength, plus_dexterity, plus_intelligence, plus_charisma, plus_vitality, plus_luck = atributy_hodnota(request)
 
-    # Volání funkce pro cenu atributů
+# Volání funkce pro cenu atributů
     atributy_cost = atributy_cena(request)
 
-    # Volání funkce pro LVL
+# Volání funkce pro LVL
     XP_aktual, lvl_aktual, lvl_next, XP_potrebne_next  = calculate_xp_and_level(request)
 
-    # Volání funkce pro Gold
+# Volání funkce pro Gold
     collected_gold, gold_growth_coefficient, gold_limit, gold_per_hour = calculate_gold(request)
 
-    # Ofenzivní a defenzivní statistiky
+# Ofenzivní a defenzivní statistiky
     crit_chance, center_dmg, min_dmg, max_dmg, weapon_typ = fight_off(request)
     heavy_res, magic_res, light_res, dodge_chance = fight_def(request)
     inicial_number = iniciace(request)
+
+# VOLÁNÍ FUNKCE PRO VÝPIS INVENTÁŘE
+    inventory_items = inventory(request)
+
+# VOLÁNÍ FUNKCE PRO VÝPIS NASAZENÝCH ITEMŮ
+    equipment_items = equipment(request)
 
     # Korky hráče
     user_steps = request.user.steps if request.user.steps is not None else 0
@@ -105,14 +113,16 @@ def profile(request):
         'magic_res': magic_res,
         'light_res': light_res,
         'dodge_chance': dodge_chance,
+    # INVENTÁŘ
+        'inventory_items': inventory_items,
+    # EQUIP
+        'equipment_items': equipment_items,
     # OSTATNÍ
         'inicial_number': inicial_number,
     }
        
 
     return render(request, 'hracapp/profile.html', context)
-
-    
 
 
 @csrf_protect
@@ -213,3 +223,42 @@ def gold_per_second(request):
         'hodnota': aktualizovana_hodnota,
     }
     return JsonResponse(data)
+
+def inventory(request):
+    user = request.user
+    inventory_items = INV.objects.filter(hrac=user)
+
+    return inventory_items
+
+def equipment(request):
+    user = request.user
+    equipment_items = EQP.objects.filter(hrac=user)
+    return equipment_items
+
+def equip_item(request, item_id):
+    user = request.user
+    inventary = INV.objects.filter(hrac=user)
+    item = inventary.get(item_id=item_id)
+    equip = EQP.objects.filter(hrac=user)
+    item_to_equip = EQP (
+        hrac=user,
+        item_id=item.item_id,
+        item_type=item.item_type,
+        item_name=item.item_name,
+        item_price=item.item_price,
+        item_description=item.item_description,
+        item_level_stop=item.item_level_stop,
+        item_level_required=item.item_level_required,
+        item_base_damage=item.item_base_damage,
+        item_weapon_type=item.item_weapon_type,
+        item_max_damage=item.item_max_damage,
+        item_min_damage=item.item_min_damage,
+        item_slots=item.item_slots
+    )
+    item_to_equip.save()
+
+
+
+    print(f"Item: {item.item_name} byl úspěšně nasazen.")
+
+    return redirect(reverse('profile-url'))
