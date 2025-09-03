@@ -84,6 +84,10 @@ Cena: <span id="cena-luck">{{ luck_cost }}</span> goldů<br>
 {% for item in equipment_items %}
     <p>Název: {{ item.item_name }}</p>
     <p>Cena: {{ item.item_price }} goldů</p>
+    <form method="POST" action="{% url 'de-eqp-url' item.item_id %}">
+        {% csrf_token %}
+    <button type="submit">Sundat</button>
+    </form>
 {% endfor %}
 
 

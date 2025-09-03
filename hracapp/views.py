@@ -3,7 +3,6 @@ import json
 from django.contrib.auth import logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render, redirect
 from .off_deff import fight_def, fight_off, iniciace
 from .rasy_povolani import povolani_bonus, rasa_bonus
@@ -125,7 +124,7 @@ def profile(request):
     return render(request, 'hracapp/profile.html', context)
 
 
-@csrf_protect
+
 def custom_logout(request):
     if request.method == 'POST':
         logout(request)
@@ -143,8 +142,6 @@ def update_steps(request):
             messages.error(request, 'Nezadali jste platnou hodnotu kroků.')
     return render(request, 'hracapp/steps_input.html')
 
-# UDĚLAT ZNOVA JS SKRIPT AŽ BUDU DĚLAT REACT
-@login_required
 def update_attribute(request):
     if request.method == 'POST':
         try:
@@ -209,8 +206,6 @@ def update_attribute(request):
 
     return JsonResponse({'success': False, 'error': 'Neplatná metoda požadavku.'}, status=405)
 
-
-@login_required
 def gold_per_second(request):
     print("Volání gold_per_second")
     lvl_aktual = calculate_xp_and_level(request)[1]
@@ -239,7 +234,6 @@ def equip_item(request, item_id):
     user = request.user
     inventary = INV.objects.filter(hrac=user)
     item = inventary.get(item_id=item_id)
-    equip = EQP.objects.filter(hrac=user)
     item_to_equip = EQP (
         hrac=user,
         item_id=item.item_id,
@@ -257,8 +251,33 @@ def equip_item(request, item_id):
     )
     item_to_equip.save()
 
-
+    INV.objects.filter(hrac=user, item_id=item_id).delete()
 
     print(f"Item: {item.item_name} byl úspěšně nasazen.")
 
+    return redirect(reverse('profile-url'))
+
+def dequip_item(request, item_id):
+    user = request.user
+    equipment = EQP.objects.filter(hrac=user)
+    item = equipment.filter(item_id=item_id).first()
+    item_to_de_equip = INV (
+        hrac=user,
+        item_id=item.item_id,
+        item_type=item.item_type,
+        item_name=item.item_name,
+        item_price=item.item_price,
+        item_description=item.item_description,
+        item_level_stop=item.item_level_stop,
+        item_level_required=item.item_level_required,
+        item_base_damage=item.item_base_damage,
+        item_weapon_type=item.item_weapon_type,
+        item_max_damage=item.item_max_damage,
+        item_min_damage=item.item_min_damage,
+        item_slots=item.item_slots
+    )
+    item_to_de_equip.save()
+
+    EQP.objects.filter(hrac=user, item_id=item_id).delete()
+    print(f"Item: {item.item_name} byl úspěšně sundán.")
     return redirect(reverse('profile-url'))

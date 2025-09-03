@@ -64,5 +64,7 @@ def shop_buy(request, item_id):
         print(f"Nedostatek zlata na nákup položky: {new_item.item_name}")
 
     golds_after = economy.gold
+    ShopOffer.objects.filter(id=item_id).delete()
+    
     print(f"Zlato před nákupem: {golds_before}, Zlato po nákupu: {golds_after}")
     return redirect(reverse('shop-url'))
