@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
+from .models import XP_LVL
+
 @login_required
 def atributy_hodnota(request):
     user = request.user
@@ -102,30 +104,6 @@ def atributy_cena(request):
     }
 
     return atributy_cost
-
-
-def calculate_xp_and_level(request):
-    user = request.user
-    steps = user.steps if user.steps is not None else 0
-    XP_aktual = steps
-    lvl_aktual = 1
-    lvl_next = 2
-    XP_potrebne_next = round((22 * lvl_aktual) * ((lvl_next) * 1.1))
-
-    for lvl in range(1, 500):
-        XP_potrebne = round((22 * lvl) * ((lvl**1.1)))
-        if XP_aktual >= XP_potrebne:
-            XP_aktual -= XP_potrebne
-            lvl_aktual += 1
-            lvl_next = lvl_aktual + 1
-            XP_potrebne_next = round((22 * lvl_next) * ((lvl_next**1.1)))
-        else:
-            user.xp = XP_aktual
-            user.lvl = lvl_aktual
-            user.save()
-            break
-
-    return XP_aktual, lvl_aktual, lvl_next, XP_potrebne_next
 
 
 def calculate_gold(request):

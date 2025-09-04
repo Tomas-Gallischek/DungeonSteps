@@ -1,4 +1,4 @@
-import re
+from .models import Atributs, Playerinfo
 from urllib import request
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
@@ -6,8 +6,10 @@ from django.contrib.auth import login
 @login_required
 def povolani_bonus(request):
     user = request.user
-    atributy_hrace = user.atributy
+    print(f"Funkce povolani_bonus byla zavolána pro uživatele: {user.username}, povolání: {user.povolani}")
+    atributy_hrace = Atributs.objects.filter(hrac=user)
 
+    print (f"Zvolené povolání: {user.povolani}")
     # SÍLA (DMG -> MID -> TANK)
     if user.povolani == 'Paladin' or user.povolani == 'paladin':
         dmg_atribut = 'strength'
@@ -32,8 +34,9 @@ def povolani_bonus(request):
     elif user.povolani == 'Mnich' or user.povolani == 'monk':
         dmg_atribut = 'dexterity'
 
+    print(f"Zvolené povolání: {user.povolani}, DMG atribut: {dmg_atribut}")
     atributy_hrace.dmg_atribut = dmg_atribut
-    atributy_hrace.save()
+    Atributs.objects.filter(hrac=user).update(dmg_atribut=dmg_atribut)
 
 
 @login_required

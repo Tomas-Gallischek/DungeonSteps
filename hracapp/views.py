@@ -10,16 +10,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
-from .utils import calculate_xp_and_level, calculate_gold, atributy_hodnota, atributy_cena
-from . models import EQP, INV
+from .utils import calculate_gold, atributy_hodnota, atributy_cena
+from .xp_lvl import plus_xp
+from . models import EQP, INV, XP_LVL
 
 
 @login_required
 def profile(request):
-    # Inicializace RASY A POVOLÁNÍ
+    user = request.user
     povolani_bonus(request)
     rasa_bonus(request)
-
 # Volání funkce pro atributy
     hp_bonus_vitality, suma_atributy, base_atributy, plus_atributy, plus_strength, plus_dexterity, plus_intelligence, plus_charisma, plus_vitality, plus_luck = atributy_hodnota(request)
 
@@ -27,7 +27,13 @@ def profile(request):
     atributy_cost = atributy_cena(request)
 
 # Volání funkce pro LVL
-    XP_aktual, lvl_aktual, lvl_next, XP_potrebne_next  = calculate_xp_and_level(request)
+    xp_model = XP_LVL.objects.filter(hrac=user).first()
+
+    xp_suma = xp_model.xp
+    lvl_aktual = xp_model.lvl if xp_model else 1
+    XP_potrebne_next = xp_model.xp_to_next_lvl if xp_model else 100
+    xp_nasetrene = xp_model.xp_nasetreno if xp_model else 1
+    next_level = lvl_aktual + 1
 
 # Volání funkce pro Gold
     collected_gold, gold_growth_coefficient, gold_limit, gold_per_hour = calculate_gold(request)
@@ -43,28 +49,14 @@ def profile(request):
 # VOLÁNÍ FUNKCE PRO VÝPIS NASAZENÝCH ITEMŮ
     equipment_items = equipment(request)
 
-    # Korky hráče
-    user_steps = request.user.steps if request.user.steps is not None else 0
-    # POST formuláře
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        if action == 'collect_gold':
-            user = request.user
-            user_gold = user.economy
-            user_gold.gold += collected_gold
-            user_gold.last_gold_collection = timezone.now()
-            user_gold.save()
-            messages.success(request, 'Goldy úspěšně sebrány!')
-            return redirect('profile-url')
-
     # Kontext pro render
     context = {
     # XP A LVL
-        'steps': user_steps,
-        'XP_aktual': XP_aktual,
+        'XP_aktual': xp_suma,
         'lvl_aktual': lvl_aktual,
-        'lvl_next': lvl_next,
+        'lvl_next': next_level,
         'XP_potrebne_next': XP_potrebne_next,
+        'xp_nasetrene': xp_nasetrene,
     # GOLDY
         'gold_own': request.user.economy.gold,
         'collected_gold': collected_gold,
@@ -130,17 +122,6 @@ def custom_logout(request):
         logout(request)
         return render(request, 'hracapp/logout.html')
     return redirect('profile-url')
-
-def update_steps(request):
-    if request.method == 'POST':
-        new_steps = request.POST.get('steps')
-        if new_steps is not None:
-            request.user.steps = new_steps
-            request.user.save()
-            messages.success(request, 'Kroky byly úspěšně aktualizovány.')
-        else:
-            messages.error(request, 'Nezadali jste platnou hodnotu kroků.')
-    return render(request, 'hracapp/steps_input.html')
 
 def update_attribute(request):
     if request.method == 'POST':
@@ -208,7 +189,7 @@ def update_attribute(request):
 
 def gold_per_second(request):
     print("Volání gold_per_second")
-    lvl_aktual = calculate_xp_and_level(request)[1]
+    lvl_aktual = XP_LVL.objects.filter(hrac=request.user).first().lvl
     golds_info = calculate_gold(request.user, lvl_aktual)
     collected_gold = golds_info[0]
     aktualizovana_hodnota = collected_gold

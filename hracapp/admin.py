@@ -43,10 +43,10 @@ class ShopOfferInline(admin.TabularInline):
 @admin.register(Playerinfo)
 class PlayerinfoAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('name', 'surname', 'gender', 'steps', 'rasa', 'povolani')}),
+        (None, {'fields': ('name', 'surname', 'gender', 'rasa', 'povolani')}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        (None, {'fields': ('name', 'surname', 'gender', 'steps', 'rasa', 'povolani')}),
+        (None, {'fields': ('name', 'surname', 'gender', 'rasa', 'povolani')}),
     )
-    list_display = UserAdmin.list_display + ('name', 'surname', 'gender', 'steps', 'rasa', 'povolani')
+    list_display = UserAdmin.list_display + ('name', 'surname', 'gender', 'rasa', 'povolani')
     inlines = [XPLVLInline, EconomyInline, AtributsInline, INVInline, EQPInline, CharacterBonusInline, ShopOfferInline]
