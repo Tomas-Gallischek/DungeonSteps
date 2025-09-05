@@ -54,7 +54,9 @@ class PlayerinfoAdmin(UserAdmin):
         (None, {'fields': ('name', 'surname', 'gender', 'rasa', 'povolani')}),
     )
     list_display = UserAdmin.list_display + ('name', 'surname', 'gender', 'rasa', 'povolani')
-    inlines = [XPLVLInline, EconomyInline, AtributsInline, INVInline, EQPInline, CharacterBonusInline, ShopOfferInline, XP_LogInline]
+    inlines = [XPLVLInline, EconomyInline, AtributsInline, CharacterBonusInline, ShopOfferInline, XP_LogInline]
 
 
-
+# Registrace modelů INV a EQP jako samostatných entit v admin rozhraní
+admin.site.register(INV)
+admin.site.register(EQP)
