@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Playerinfo, XP_LVL, Economy, Atributs, INV, EQP, Character_bonus, ShopOffer
+from .models import Playerinfo, XP_LVL, Economy, Atributs, INV, EQP, Character_bonus, ShopOffer, XP_Log
 
 # Inlines pro související modely
 class XPLVLInline(admin.TabularInline):
@@ -38,6 +38,11 @@ class ShopOfferInline(admin.TabularInline):
     can_delete = False
     verbose_name_plural = 'Nabídky obchodu'
 
+class XP_LogInline(admin.TabularInline):
+    model = XP_Log
+    extra = 1
+    readonly_fields = ('timestamp',)
+
 # Vlastní Admin třída pro Playerinfo s inlines.
 # Dekorátor @admin.register(Playerinfo) zajistí správnou registraci.
 @admin.register(Playerinfo)
@@ -49,4 +54,7 @@ class PlayerinfoAdmin(UserAdmin):
         (None, {'fields': ('name', 'surname', 'gender', 'rasa', 'povolani')}),
     )
     list_display = UserAdmin.list_display + ('name', 'surname', 'gender', 'rasa', 'povolani')
-    inlines = [XPLVLInline, EconomyInline, AtributsInline, INVInline, EQPInline, CharacterBonusInline, ShopOfferInline]
+    inlines = [XPLVLInline, EconomyInline, AtributsInline, INVInline, EQPInline, CharacterBonusInline, ShopOfferInline, XP_LogInline]
+
+
+

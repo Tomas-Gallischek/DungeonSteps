@@ -34,37 +34,42 @@ def shop_reset(request):
 
 def shop_buy(request, item_id):
     print(f"Spuštění funkce nákupu položky: {item_id}")
-    item_to_buy = ShopOffer.objects.get(id=item_id)
-    new_item = INV(
-        hrac=item_to_buy.hrac,
-        item_id=item_to_buy.item_id,
-        item_type=item_to_buy.item_type,
-        item_name=item_to_buy.item_name,
-        item_price=item_to_buy.item_price,
-        item_description=item_to_buy.item_description,
-        item_level_required=item_to_buy.item_level_required,
-        item_level_stop=item_to_buy.item_level_stop,
-        item_weapon_type=item_to_buy.item_weapon_type,
-        item_base_damage=item_to_buy.item_base_damage,
-        item_min_damage=item_to_buy.item_min_damage,
-        item_max_damage=item_to_buy.item_max_damage,
-        item_slots=item_to_buy.item_slots
-    )
     user = request.user
+    item_to_buy = ShopOffer.objects.get(id=item_id)
     economy = Economy.objects.get(hrac=user)
     golds_before = economy.gold
 
-    if economy.gold >= new_item.item_price:
-        economy.gold -= new_item.item_price
+    if economy.gold >= item_to_buy.item_price:
+        economy.gold -= item_to_buy.item_price
         economy.save()
-        print(f"Nákup položky: {new_item.item_name} za cenu {new_item.item_price} zlaťáků")
-        new_item.save()
+
+        INV.objects.create(
+            hrac=item_to_buy.hrac,
+            item_id=item_to_buy.item_id,
+            item_type=item_to_buy.item_type,
+            item_name=item_to_buy.item_name,
+            item_price=item_to_buy.item_price,
+            item_description=item_to_buy.item_description,
+            item_level_required=item_to_buy.item_level_required,
+            item_level_stop=item_to_buy.item_level_stop,
+            item_weapon_type=item_to_buy.item_weapon_type,
+            item_base_damage=item_to_buy.item_base_damage,
+            item_min_damage=item_to_buy.item_min_damage,
+            item_max_damage=item_to_buy.item_max_damage,
+            item_slots=item_to_buy.item_slots
+        )
+
+        ShopOffer.objects.filter(id=item_id).delete()
+        
+        print(f"Nákup položky: {item_to_buy.item_name} za cenu {item_to_buy.item_price} zlaťáků")
+
 
     else:
-        print(f"Nedostatek zlata na nákup položky: {new_item.item_name}")
+        print(f"Nedostatek zlata na nákup položky: {item_to_buy.item_name}")
 
     golds_after = economy.gold
-    ShopOffer.objects.filter(id=item_id).delete()
+
+
     
     print(f"Zlato před nákupem: {golds_before}, Zlato po nákupu: {golds_after}")
     return redirect(reverse('shop-url'))

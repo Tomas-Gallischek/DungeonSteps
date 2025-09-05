@@ -56,9 +56,9 @@ def __str__(self):
 # VŠECHNY VNOŘENÉ DATABÁZE
 class XP_LVL(models.Model):
     hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='xp_lvl', blank=True)
-    lvl = models.IntegerField(("Úroveň"), default=0, blank=True, null=True)
+    lvl = models.IntegerField(("Úroveň"), default=1, blank=True, null=True)
     xp = models.IntegerField(("Zkušenosti"), default=0, blank=True, null=True)
-    xp_to_next_lvl = models.IntegerField(("XP do další úrovně"), default=0, blank=True, null=True)
+    xp_to_next_lvl = models.IntegerField(("XP do další úrovně"), default=50, blank=True, null=True)
     xp_nasetreno = models.IntegerField(("XP nasetřeno"), default=0, blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -95,6 +95,7 @@ class XP_LVL(models.Model):
     def __str__(self):
         return f"XP_LVL(hrac={self.hrac}, lvl={self.lvl}, xp={self.xp})"
 
+
 class XP_Log(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='xp_log', blank=True)
     xp_record = models.IntegerField(("Získané XP"), default=0, blank=True, null=True)
@@ -102,6 +103,18 @@ class XP_Log(models.Model):
 
     def __str__(self):
         return f"XP_Log(hrac={self.hrac}, xp_record={self.xp_record}, timestamp={self.timestamp})"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs) # Nejdříve ulož aktuální záznam
+        
+        # Získání logů pro aktuálního hráče seřazených od nejnovějších
+        logs = XP_Log.objects.filter(hrac=self.hrac).order_by('-timestamp')
+        
+        # Pokud je logů více než 50, začneme mazat ty nejstarší
+        if logs.count() > 50:
+            old_logs = logs[50:]
+            for log in old_logs:
+                log.delete()
 
 class Economy(models.Model):
     hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='economy', blank=True)

@@ -6,7 +6,7 @@ def iniciace(request):
     user = request.user
     user_lvl = XP_LVL.objects.get(hrac=user).lvl
     atributy = Atributs.objects.get(hrac=user)
-    inicial_number = round((atributy.suma_charisma * 4) / (user_lvl), 2) # <-- % ŠANCE NA INICIATIVU (maximální honota 100 tj. 100%)
+    inicial_number = round((atributy.suma_charisma * 4) + (user_lvl), 2) # <-- % ŠANCE NA INICIATIVU (maximální honota 100 tj. 100%)
     if inicial_number > 100:
         inicial_number = 100
     return inicial_number
@@ -43,7 +43,7 @@ def fight_off(request):
     max_dmg = base_dmg * weapon_dmg_max
     center_dmg = (min_dmg + max_dmg) // 2
 
-    crit_chance = round((luck / 2) / (user_lvl / 3), 2)
+    crit_chance = round((luck / 2) + (user_lvl / 3), 2)
     if crit_chance >= 50:
         crit_chance = 50
     if crit_chance < 1:
@@ -70,6 +70,6 @@ def fight_def(request):
     magic_res = round(intelligence // 10, 2)
     light_res = round(dexterity // 10, 2)
 
-    dodge_chance = round((luck / 3) / (user_lvl / 2), 2)
+    dodge_chance = round((luck / 3) + (user_lvl / 2), 2)
 
     return heavy_res, magic_res, light_res, dodge_chance

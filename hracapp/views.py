@@ -17,39 +17,36 @@ from . models import EQP, INV, XP_LVL
 
 @login_required
 def profile(request):
+    
     user = request.user
+
     povolani_bonus(request)
+
     rasa_bonus(request)
-# Volání funkce pro atributy
+
     hp_bonus_vitality, suma_atributy, base_atributy, plus_atributy, plus_strength, plus_dexterity, plus_intelligence, plus_charisma, plus_vitality, plus_luck = atributy_hodnota(request)
 
-# Volání funkce pro cenu atributů
     atributy_cost = atributy_cena(request)
 
-# Volání funkce pro LVL
     xp_model = XP_LVL.objects.filter(hrac=user).first()
-
-    xp_suma = xp_model.xp
+    xp_suma = xp_model.xp if xp_model else 0
     lvl_aktual = xp_model.lvl if xp_model else 1
     XP_potrebne_next = xp_model.xp_to_next_lvl if xp_model else 100
     xp_nasetrene = xp_model.xp_nasetreno if xp_model else 1
     next_level = lvl_aktual + 1
 
-# Volání funkce pro Gold
     collected_gold, gold_growth_coefficient, gold_limit, gold_per_hour = calculate_gold(request)
 
-# Ofenzivní a defenzivní statistiky
     crit_chance, center_dmg, min_dmg, max_dmg, weapon_typ = fight_off(request)
+
     heavy_res, magic_res, light_res, dodge_chance = fight_def(request)
+
     inicial_number = iniciace(request)
 
-# VOLÁNÍ FUNKCE PRO VÝPIS INVENTÁŘE
     inventory_items = inventory(request)
 
-# VOLÁNÍ FUNKCE PRO VÝPIS NASAZENÝCH ITEMŮ
     equipment_items = equipment(request)
 
-    # Kontext pro render
     context = {
     # XP A LVL
         'XP_aktual': xp_suma,
