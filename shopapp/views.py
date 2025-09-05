@@ -4,6 +4,7 @@ from .full_shop import full_shop
 from django.shortcuts import redirect, render
 from hracapp.models import ShopOffer, INV, Economy
 from django.contrib.auth.decorators import login_required
+from hracapp.economy import buy_or_sell
 
 @login_required
 def shop(request):
@@ -36,12 +37,13 @@ def shop_buy(request, item_id):
     print(f"Spuštění funkce nákupu položky: {item_id}")
     user = request.user
     item_to_buy = ShopOffer.objects.get(id=item_id)
+    gold_bill = item_to_buy.item_price
     economy = Economy.objects.get(hrac=user)
     golds_before = economy.gold
 
     if economy.gold >= item_to_buy.item_price:
-        economy.gold -= item_to_buy.item_price
-        economy.save()
+
+        buy_or_sell(request, 'gold', item_to_buy.item_price, 'minus')
 
         INV.objects.create(
             hrac=item_to_buy.hrac,

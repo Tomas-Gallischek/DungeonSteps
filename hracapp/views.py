@@ -4,114 +4,72 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.shortcuts import render, redirect
-from .off_deff import fight_def, fight_off, iniciace
-from .rasy_povolani import povolani_bonus, rasa_bonus
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.utils import timezone
-from django.http import JsonResponse
-from .utils import calculate_gold, atributy_hodnota, atributy_cena
+
+from welcomeapp.rasy_povolani import rasa_bonus_create
 from .xp_lvl import plus_xp
-from . models import EQP, INV, XP_LVL
+from . models import EQP, INV, XP_LVL, Economy, Atributs
 
 
 @login_required
 def profile(request):
-    
-    user = request.user
-
-    povolani_bonus(request)
-
-    rasa_bonus(request)
-
-    hp_bonus_vitality, suma_atributy, base_atributy, plus_atributy, plus_strength, plus_dexterity, plus_intelligence, plus_charisma, plus_vitality, plus_luck = atributy_hodnota(request)
-
-    atributy_cost = atributy_cena(request)
-
-    xp_model = XP_LVL.objects.filter(hrac=user).first()
-    xp_suma = xp_model.xp if xp_model else 0
-    lvl_aktual = xp_model.lvl if xp_model else 1
-    XP_potrebne_next = xp_model.xp_to_next_lvl if xp_model else 100
-    xp_nasetrene = xp_model.xp_nasetreno if xp_model else 1
-    next_level = lvl_aktual + 1
-
-    collected_gold, gold_growth_coefficient, gold_limit, gold_per_hour = calculate_gold(request)
-
-    crit_chance, center_dmg, min_dmg, max_dmg, weapon_typ = fight_off(request)
-
-    heavy_res, magic_res, light_res, dodge_chance = fight_def(request)
-
-    inicial_number = iniciace(request)
-
+    rasa_bonus_create(request)
     inventory_items = inventory(request)
 
     equipment_items = equipment(request)
 
     context = {
     # XP A LVL
-        'XP_aktual': xp_suma,
-        'lvl_aktual': lvl_aktual,
-        'lvl_next': next_level,
-        'XP_potrebne_next': XP_potrebne_next,
-        'xp_nasetrene': xp_nasetrene,
+        'XP_aktual': XP_LVL.objects.get(hrac=request.user).xp,
+        'lvl_aktual': XP_LVL.objects.get(hrac=request.user).lvl,
+        'lvl_next': XP_LVL.objects.get(hrac=request.user).lvl + 1,
+        'XP_potrebne_next': XP_LVL.objects.get(hrac=request.user).xp_to_next_lvl,
+        'xp_nasetrene': XP_LVL.objects.get(hrac=request.user).xp_nasetreno,
     # GOLDY
-        'gold_own': request.user.economy.gold,
-        'collected_gold': collected_gold,
-        'gold_growth_coefficient': gold_growth_coefficient,
-        'gold_limit': gold_limit,
-        'gold_per_hour': gold_per_hour,
+        'gold_own': Economy.objects.get(hrac=request.user).gold,
+        'dungeon_token_own': Economy.objects.get(hrac=request.user).dungeon_token,
     # ATRIBUTY - BASE
-        'base_hp': base_atributy["base_hp"],
-        'base_strength': base_atributy["base_strength"],
-        'base_dexterity': base_atributy["base_dexterity"],
-        'base_intelligence': base_atributy["base_intelligence"],
-        'base_charisma': base_atributy["base_charisma"],
-        'base_vitality': base_atributy["base_vitality"],
-        'base_luck': base_atributy["base_luck"],
+        'base_hp': Atributs.objects.get(hrac=request.user).hp_base,
+        'base_strength': Atributs.objects.get(hrac=request.user).strength_base,
+        'base_dexterity': Atributs.objects.get(hrac=request.user).dexterity_base,
+        'base_intelligence': Atributs.objects.get(hrac=request.user).intelligence_base,
+        'base_charisma': Atributs.objects.get(hrac=request.user).charisma_base,
+        'base_vitality': Atributs.objects.get(hrac=request.user).vitality_base,
+        'base_luck': Atributs.objects.get(hrac=request.user).luck_base,
     # ATRIBUTY - PLUS
-        'plus_hp': plus_atributy["plus_hp"],
-        'plus_strength': plus_atributy["plus_strength"],
-        'plus_dexterity': plus_atributy["plus_dexterity"],
-        'plus_intelligence': plus_atributy["plus_intelligence"],
-        'plus_charisma': plus_atributy["plus_charisma"],
-        'plus_vitality': plus_atributy["plus_vitality"],
-        'plus_luck': plus_atributy["plus_luck"],
+        'plus_hp': Atributs.objects.get(hrac=request.user).hp_plus,
+        'plus_strength': Atributs.objects.get(hrac=request.user).strength_plus,
+        'plus_dexterity': Atributs.objects.get(hrac=request.user).dexterity_plus,
+        'plus_intelligence': Atributs.objects.get(hrac=request.user).intelligence_plus,
+        'plus_charisma': Atributs.objects.get(hrac=request.user).charisma_plus,
+        'plus_vitality': Atributs.objects.get(hrac=request.user).vitality_plus,
+        'plus_luck': Atributs.objects.get(hrac=request.user).luck_plus,
     # ATRIBUTY - SUMA
-        'suma_hp': suma_atributy["suma_hp"],
-        'suma_strength': suma_atributy["suma_strength"],
-        'suma_dexterity': suma_atributy["suma_dexterity"],
-        'suma_intelligence': suma_atributy["suma_intelligence"],
-        'suma_charisma': suma_atributy["suma_charisma"],
-        'suma_vitality': suma_atributy["suma_vitality"],
-        'suma_luck': suma_atributy["suma_luck"],
-        'hp_bonus_vitality': hp_bonus_vitality,
+        'suma_hp': Atributs.objects.get(hrac=request.user).suma_hp,
+        'suma_strength': Atributs.objects.get(hrac=request.user).suma_strength,
+        'suma_dexterity': Atributs.objects.get(hrac=request.user).suma_dexterity,
+        'suma_intelligence': Atributs.objects.get(hrac=request.user).suma_intelligence,
+        'suma_charisma': Atributs.objects.get(hrac=request.user).suma_charisma,
+        'suma_vitality': Atributs.objects.get(hrac=request.user).suma_vitality,
+        'suma_luck': Atributs.objects.get(hrac=request.user).suma_luck,
     # ATRIBUTY - CENA
-        'strength_cost': atributy_cost["strength_cost"],
-        'dexterity_cost': atributy_cost["dexterity_cost"],
-        'intelligence_cost': atributy_cost["intelligence_cost"],
-        'charisma_cost': atributy_cost["charisma_cost"],
-        'vitality_cost': atributy_cost["vitality_cost"],
-        'luck_cost': atributy_cost["luck_cost"],
-    # OFF 
-        'crit_chance': crit_chance,
-        'center_dmg': center_dmg,
-        'weapon_typ': weapon_typ,
-    # DEF
-        'heavy_res': heavy_res,
-        'magic_res': magic_res,
-        'light_res': light_res,
-        'dodge_chance': dodge_chance,
+        'strength_cost': Atributs.objects.get(hrac=request.user).strength_cena,
+        'dexterity_cost': Atributs.objects.get(hrac=request.user).dexterity_cena,
+        'intelligence_cost': Atributs.objects.get(hrac=request.user).intelligence_cena,
+        'charisma_cost': Atributs.objects.get(hrac=request.user).charisma_cena,
+        'vitality_cost': Atributs.objects.get(hrac=request.user).vitality_cena,
+        'luck_cost': Atributs.objects.get(hrac=request.user).luck_cena,
+
     # INVENTÁŘ
         'inventory_items': inventory_items,
     # EQUIP
         'equipment_items': equipment_items,
     # OSTATNÍ
-        'inicial_number': inicial_number,
+
     }
        
 
     return render(request, 'hracapp/profile.html', context)
-
 
 
 def custom_logout(request):
@@ -119,83 +77,6 @@ def custom_logout(request):
         logout(request)
         return render(request, 'hracapp/logout.html')
     return redirect('profile-url')
-
-def update_attribute(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            attribute_to_update = data.get('attribute')
-
-            # Zkontroluje, zda je atribut platný
-            valid_attributes = ['strength', 'dexterity', 'intelligence', 'charisma', 'vitality', 'luck']
-            if attribute_to_update in valid_attributes:
-
-                user = request.user
-                user_gold = user.economy
-                user_atributs = user.atributy
-
-                # Získáme aktuální ceny
-                current_prices = atributy_cena(request)
-                atribut_bill = current_prices.get(f'{attribute_to_update}_cost')
-
-                # Kontrola dostatku goldů
-                if user_gold.gold < atribut_bill:
-                    return JsonResponse({'success': False, 'error': 'Nedostatek zlata.'}, status=403)
-
-                # Odečtení ceny atributu z uživatelských goldů a uložení
-                user_gold.gold -= atribut_bill
-
-                # Aktualizace správného atributu (plus) a uložení
-                current_plus_value = getattr(user_atributs, f'{attribute_to_update}_plus')
-                setattr(user_atributs, f'{attribute_to_update}_plus', current_plus_value + 1)
-
-
-                user_atributs.save()
-                user_gold.save()
-                user.save()
-
-                # Speciální případ pro vitalitu, kde se aktualizují HP
-                if attribute_to_update == 'vitality':
-                    user_atributs.HP = atributy_hodnota(request)[0]['suma_hp']
-
-                # Vypočítá nové ceny a hodnoty atributů po aktualizaci
-                hp_bonus_vitality, suma_atributy, base_atributy, plus_atributy, plus_strength, plus_dexterity, plus_intelligence, plus_charisma, plus_vitality, plus_luck = atributy_hodnota(request)
-
-                new_value = suma_atributy.get(f'suma_{attribute_to_update}')
-
-                atributy_cost = atributy_cena(request)
-                new_price = atributy_cost.get(f'{attribute_to_update}_cost')
-
-                # Sestavení a vrácení odpovědi
-                response_data = {
-                    'success': True,
-                    'new_value': new_value,
-                    'new_prices': new_price,
-                    'new_golds': user_gold.gold,
-                    'new_hp': suma_atributy['suma_hp'] if attribute_to_update == 'vitality' else user_atributs.HP,
-                }
-                return JsonResponse(response_data)
-            else:
-                return JsonResponse({'success': False, 'error': 'Neplatný atribut.'}, status=400)
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Neplatná JSON data.'}, status=400)
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
-
-    return JsonResponse({'success': False, 'error': 'Neplatná metoda požadavku.'}, status=405)
-
-def gold_per_second(request):
-    print("Volání gold_per_second")
-    lvl_aktual = XP_LVL.objects.filter(hrac=request.user).first().lvl
-    golds_info = calculate_gold(request.user, lvl_aktual)
-    collected_gold = golds_info[0]
-    aktualizovana_hodnota = collected_gold
-
-    # Vrácení dat jako JSON
-    data = {
-        'hodnota': aktualizovana_hodnota,
-    }
-    return JsonResponse(data)
 
 def inventory(request):
     user = request.user

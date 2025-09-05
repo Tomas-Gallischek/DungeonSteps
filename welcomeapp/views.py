@@ -1,15 +1,11 @@
 from re import S
 from django.shortcuts import render
-import json
-from django.contrib.auth import logout
 from django.shortcuts import redirect, render
-from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render, redirect
-
-from hracapp.models import EQP, INV, XP_LVL, Atributs, Character_bonus, Economy, Playerinfo, ShopOffer, XP_Log
+from hracapp.models import EQP, INV, XP_LVL, Atributs, Character_bonus, Economy, ShopOffer, XP_Log
 from .forms import RegistrationForm
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
+
 
 
 def index(request):
@@ -29,10 +25,11 @@ def register(request):
             ShopOffer.objects.create(hrac=user)
             INV.objects.create(hrac=user)
             EQP.objects.create(hrac=user)
+
             login(request, user)
 
             print(f"Uživatel {user.username} byl úspěšně zaregistrován a přihlášen.")
-            
+
             return redirect('profile-url')
     else:
         form = RegistrationForm()

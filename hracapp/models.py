@@ -1,6 +1,11 @@
+from email.mime import base
+from pyexpat import model
+from turtle import mode
+from urllib import request
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+
 
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):
@@ -49,6 +54,7 @@ class Playerinfo(AbstractUser):
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     rasa = models.CharField(max_length=20, choices=RASA_CHOICES, blank=True, null=True)
     povolani = models.CharField(max_length=20, choices=POVOLANI_CHOICES, blank=True, null=True)
+    poz = models.CharField(max_length=200, blank=True, null=True)
 
 def __str__(self):
     return self.username
@@ -119,47 +125,111 @@ class XP_Log(models.Model):
 class Economy(models.Model):
     hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='economy', blank=True)
     gold = models.IntegerField(("Počet GOLDŮ"), default=1)
-    rohlik = models.IntegerField(("Počet ROHLÍKŮ"), default=1)
-    gold_growth_coefficient = models.FloatField(("Koeficient růstu GOLDŮ"), default=1.0)
-    last_gold_collection = models.DateTimeField(blank=True, null=True, default=timezone.now)
     dungeon_token = models.IntegerField(("Počet DUNGEON TOKENŮ"), default=0)
 
     def __str__(self):
-        return f"Economic(hrac={self.hrac}, gold={self.gold}, rohlik={self.rohlik}, gold_growth_coefficient={self.gold_growth_coefficient}, last_gold_collection={self.last_gold_collection})"
+        return f"Economic(hrac={self.hrac}, gold={self.gold}, dungeon_token={self.dungeon_token})"
+
+class Economy_Log(models.Model):
+    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='economy_log', blank=True)
+    gold_change = models.IntegerField(("Změna GOLDŮ"), default=0, blank=True, null=True)
+    dungeon_token_change = models.IntegerField(("Změna DUNGEON TOKENŮ"), default=0, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Economy_Log(hrac={self.hrac}, gold_change={self.gold_change}, dungeon_token_change={self.dungeon_token_change}, timestamp={self.timestamp})"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        logs = Economy_Log.objects.filter(hrac=self.hrac).order_by('-timestamp')
+        
+        if logs.count() > 50:
+            old_logs = logs[50:]
+            for log in old_logs:
+                log.delete()
+
+from django.db import models
 
 class Atributs(models.Model):
-    hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='atributy', blank=True)
-    HP = models.IntegerField(("Počet životů"), default=10, blank=True, null=True)
-    hp_bonus = models.FloatField(("Bonus k životům"), default=1, blank=True, null=True)
+    hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='atributy', blank=True, null=True)
+
+# BASE = Rasa + povolání
+# PLUS = Zvyšování klikáním
+# ITEMS = Bonusy z předmětů (ty sčítat zvlášť v eqp a pak je posílat sem)
+# CENA = Výpočet ceny na úrovni databáze zatím pomocí ** 1.5
+
+
+    suma_hp = models.IntegerField(("Počet životů"), default=100, blank=True, null=True)
+    hp_base = models.FloatField(("Bonus k životům"), default=100, blank=True, null=True)
+    hp_plus = models.FloatField(("plus k životům"), default=0, blank=True, null=True)
+    hp_items = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
+    hp_bonus_procenta = models.FloatField(("Bonus k životům (%)"), default=0, blank=True, null=True)
 
     suma_strength = models.IntegerField(("Síla"), default=1, blank=True, null=True)
     strength_base = models.IntegerField(("Základní síla"), default=1, blank=True, null=True)
     strength_plus = models.IntegerField(("plus k síle"), default=0, blank=True, null=True)
+    strength_items = models.IntegerField(("Bonus k síle (předměty)"), default=0, blank=True, null=True)
 
     suma_dexterity = models.IntegerField(("Obratnost"), default=1, blank=True, null=True)
     dexterity_base = models.IntegerField(("Základní obratnost"), default=1, blank=True, null=True)
     dexterity_plus = models.IntegerField(("plus k obratnosti"), default=0, blank=True, null=True)
+    dexterity_items = models.IntegerField(("Bonus k obratnosti (předměty)"), default=0, blank=True, null=True)
 
     suma_intelligence = models.IntegerField(("Inteligence"), default=1, blank=True, null=True)
     intelligence_base = models.IntegerField(("Základní inteligence"), default=1, blank=True, null=True)
     intelligence_plus = models.IntegerField(("plus k inteligenci"), default=0, blank=True, null=True)
+    intelligence_items = models.IntegerField(("Bonus k inteligenci (předměty)"), default=0, blank=True, null=True)
 
     suma_charisma = models.IntegerField(("Charisma"), default=1, blank=True, null=True)
     charisma_base = models.IntegerField(("Základní charisma"), default=1, blank=True, null=True)
     charisma_plus = models.IntegerField(("plus k charismatu"), default=0, blank=True, null=True)
+    charisma_items = models.IntegerField(("Bonus k charismatu (předměty)"), default=0, blank=True, null=True)
 
     suma_vitality = models.IntegerField(("Vitalita"), default=1, blank=True, null=True)
     vitality_base = models.IntegerField(("Základní vitalita"), default=1, blank=True, null=True)
     vitality_plus = models.IntegerField(("plus k vitalitě"), default=0, blank=True, null=True)
+    vitality_items = models.IntegerField(("Bonus k vitalitě (předměty)"), default=0, blank=True, null=True)
 
     suma_luck = models.IntegerField(("Zručnost"), default=1, blank=True, null=True)
     luck_base = models.IntegerField(("Základní zručnost"), default=1, blank=True, null=True)
     luck_plus = models.IntegerField(("plus k zručnosti"), default=0, blank=True, null=True)
+    luck_items = models.IntegerField(("Bonus k zručnosti (předměty)"), default=0, blank=True, null=True)
 
     dmg_atribut = models.CharField(max_length=20, choices=Playerinfo.ATRIBUTS_CHOICES, blank=True, null=True)
 
+    strength_cena = models.IntegerField(("Cena za zvýšení síly"), default=1, blank=True, null=True)
+    dexterity_cena = models.IntegerField(("Cena za zvýšení obratnosti"), default=1, blank=True, null=True)
+    intelligence_cena = models.IntegerField(("Cena za zvýšení inteligence"), default=1, blank=True, null=True)
+    charisma_cena = models.IntegerField(("Cena za zvýšení charismatu"), default=1, blank=True, null=True)
+    vitality_cena = models.IntegerField(("Cena za zvýšení vitality"), default=1, blank=True, null=True)
+    luck_cena = models.IntegerField(("Cena za zvýšení zručnosti"), default=1, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+    # HP
+        self.hp_base = 99 + (XP_LVL.objects.get(hrac=self.hrac).lvl ** 2)
+        self.hp_plus = (self.suma_vitality) * (self.suma_vitality / 10)
+        self.suma_hp = self.hp_base + self.hp_plus
+        self.hp_bonus_procenta = (self.hp_plus) / (self.suma_hp / 100)
+    # OSTATNÍ ATRIBUTY
+        self.suma_strength = self.strength_base + self.strength_plus + self.strength_items
+        self.suma_dexterity = self.dexterity_base + self.dexterity_plus + self.dexterity_items
+        self.suma_intelligence = self.intelligence_base + self.intelligence_plus + self.intelligence_items
+        self.suma_charisma = self.charisma_base + self.charisma_plus + self.charisma_items
+        self.suma_vitality = self.vitality_base + self.vitality_plus + self.vitality_items
+        self.suma_luck = self.luck_base + self.luck_plus + self.luck_items
+
+    # CENA ZA VYLEPŠENÍ
+        self.strength_cena = self.strength_plus ** 1.5
+        self.dexterity_cena = self.dexterity_plus ** 1.5
+        self.intelligence_cena = self.intelligence_plus ** 1.5
+        self.charisma_cena = self.charisma_plus ** 1.5
+        self.vitality_cena = self.vitality_plus ** 1.5
+        self.luck_cena = self.luck_plus ** 1.5
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Atributs(hrac={self.hrac}, HP={self.HP}, hp_bonus={self.hp_bonus}, suma_strength={self.suma_strength}, strength_base={self.strength_base}, strength_plus={self.strength_plus}, suma_dexterity={self.suma_dexterity}, dexterity_base={self.dexterity_base}, dexterity_plus={self.dexterity_plus}, suma_intelligence={self.suma_intelligence}, intelligence_base={self.intelligence_base}, intelligence_plus={self.intelligence_plus}, suma_charisma={self.suma_charisma}, charisma_base={self.charisma_base}, charisma_plus={self.charisma_plus}, suma_vitality={self.suma_vitality}, vitality_base={self.vitality_base}, vitality_plus={self.vitality_plus}, suma_luck={self.suma_luck}, luck_base={self.luck_base}, luck_plus={self.luck_plus}, dmg_atribut={self.dmg_atribut})"
+        return f"Atributy pro hráče {self.hrac.username}"
 
 class Character_bonus(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='character_bonus', blank=True)
