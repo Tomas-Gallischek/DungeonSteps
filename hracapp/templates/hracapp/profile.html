@@ -43,30 +43,75 @@
 <p>HP: <span id="hp-value">{{ suma_hp }}</span></p>
 <p></p>
 <p>Strength: <span id="strength-value">{{ suma_strength }}</span></p>
+    <form action="{% url 'atributs-update-url' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="attribute" value="strength">
+        <button type="submit">+</button>
+    </form>
+<p>Cena: <span id="strength-price">{{ strength_cost }}</span></p>
+
 <p>Dexterity: <span id="dexterity-value">{{ suma_dexterity }}</span></p>
+    <form action="{% url 'atributs-update-url' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="attribute" value="dexterity">
+        <button type="submit">+</button>
+    </form>
+<p>Cena: <span id="dexterity-price">{{ dexterity_cost }}</span></p>
+
 <p>Intelligence: <span id="intelligence-value">{{ suma_intelligence }}</span></p>
+    <form action="{% url 'atributs-update-url' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="attribute" value="intelligence">
+        <button type="submit">+</button>
+    </form>
+<p>Cena: <span id="intelligence-price">{{ intelligence_cost }}</span></p>
+
 <p>Charisma: <span id="charisma-value">{{ suma_charisma }}</span></p>
+    <form action="{% url 'atributs-update-url' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="attribute" value="charisma">
+        <button type="submit">+</button>
+    </form>
+<p>Cena: <span id="charisma-price">{{ charisma_cost }}</span></p>
+
 <p>Vitality: <span id="vitality-value">{{ suma_vitality }}</span></p>
+    <form action="{% url 'atributs-update-url' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="attribute" value="vitality">
+        <button type="submit">+</button>
+    </form>
+<p>Cena: <span id="vitality-price">{{ vitality_cost }}</span></p>
+
 <p>Luck: <span id="luck-value">{{ suma_luck }}</span></p>
+    <form action="{% url 'atributs-update-url' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="attribute" value="luck">
+        <button type="submit">+</button>
+    </form>
+<p>Cena: <span id="luck-price">{{ luck_cost }}</span></p>
 
 <h1>INVENTÁŘ</h1>
 {% for item in inventory_items %}
+    {% if item.item_id > 1 %}
     <p>Název: {{ item.item_name }}</p>
     <p>Cena: {{ item.item_price }} goldů</p>
     <form method="POST" action="{% url 'eqp-url' item.item_id %}">
         {% csrf_token %}
     <button type="submit">Nasadit</button>
     </form>
+    {% endif %}
 {% endfor %}
 
 <h1>EQUIP</h1>
 {% for item in equipment_items %}
+    {% if item.item_id > 1 %}
     <p>Název: {{ item.item_name }}</p>
     <p>Cena: {{ item.item_price }} goldů</p>
     <form method="POST" action="{% url 'de-eqp-url' item.item_id %}">
         {% csrf_token %}
     <button type="submit">Sundat</button>
     </form>
+    {% endif %}
 {% endfor %}
 
 

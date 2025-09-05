@@ -13,7 +13,7 @@ from . models import EQP, INV, XP_LVL, Economy, Atributs
 
 @login_required
 def profile(request):
-    rasa_bonus_create(request)
+    rasa_bonus_create(request) # <-- Naštení základních hodnota atributů
     inventory_items = inventory(request)
 
     equipment_items = equipment(request)
