@@ -49,7 +49,6 @@ def rasa_bonus_create(request):
         charisma_base = 2 * koeficient_statu
         luck_base = 5 * koeficient_statu
 
-
     elif rasa == 'Gnóm' or rasa == 'gnome':
         hp_base = 50 * koeficient_statu
         strength_base = 4 * koeficient_statu
@@ -58,7 +57,6 @@ def rasa_bonus_create(request):
         intelligence_base = 5 * koeficient_statu
         charisma_base = 2 * koeficient_statu
         luck_base = 5 * koeficient_statu
-
 
     elif rasa == 'Stín' or rasa == 'shadow':
         hp_base = 20 * koeficient_statu
@@ -74,12 +72,13 @@ def rasa_bonus_create(request):
 
     print(f"Základní staty pro rasu {rasa} jsou: hp: {hp_base}, str: {strength_base}, vit: {vitality_base}, dex: {dexterity_base}, int: {intelligence_base}, cha: {charisma_base}, luc: {luck_base}")
 
-    Atributs.objects.filter(hrac=user).update(
-        hp_base=hp_base,
-        strength_base=strength_base,
-        vitality_base=vitality_base,
-        dexterity_base=dexterity_base,
-        intelligence_base=intelligence_base,
-        charisma_base=charisma_base,
-        luck_base=luck_base
-    )
+    # Načtení instance a uložení upravených hodnot
+    atributs_instance = Atributs.objects.get(hrac=user)
+    atributs_instance.hp_base = hp_base
+    atributs_instance.strength_base = strength_base
+    atributs_instance.vitality_base = vitality_base
+    atributs_instance.dexterity_base = dexterity_base
+    atributs_instance.intelligence_base = intelligence_base
+    atributs_instance.charisma_base = charisma_base
+    atributs_instance.luck_base = luck_base
+    atributs_instance.save()
