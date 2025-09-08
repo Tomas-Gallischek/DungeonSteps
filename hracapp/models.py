@@ -9,35 +9,41 @@ from django.utils import timezone
 
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):
-    ITEM_TYPE_CHOICES = [
-    ('weapon', 'Zbraň'),
-    ('armor', 'Brnění'),
-]
+    ITEM_TYPE_CHOICES = (
+        ('universal', 'Univerzální'),
+        ('heavy', 'Těžké'),
+        ('light', 'Lehké'),
+        ('magic', 'Magické'),
+    )
+
+    ITEM_CATEGORY_CHOICES = (
+        ('weapon', 'zbraň'),
+        ('armor', 'brnění'),
+        ('helmet', 'helma'),
+        ('boots', 'boty'),
+        ('ring', 'prsten'),
+        ('amulet', 'náhrdelník'),
+        ('talisman', 'talisman'),
+
+    )
+    
     GENDER_CHOICES = (
-    ('male', 'Muž'),
-    ('female', 'Žena'),
-    ('other', 'Jiné'),
-)
+        ('male', 'Muž'),
+        ('female', 'Žena'),
+        ('other', 'Jiné'),
+    )
     RASA_CHOICES = (
-        ('Choice:', 'Vyber:'),
         ('human', 'Člověk'),
         ('elf', 'Elf'),
         ('dwarf', 'Trpaslík'),
-        ('urgal', 'Urgal'),
+        ('ork', 'Ork'),
         ('gnóm', 'Gnóm'),
         ('shadow', 'Stín'),
     )
     POVOLANI_CHOICES = (
-        ('choice:', 'Vyber:'),
         ('ranger', 'Hraničář'),
-        ('monk', 'Mnich'),
-        ('warrior', 'Válečník'),
         ('paladin', 'Paladin'),
         ('mage', 'Mág'),
-        ('rogue', 'Roguna'),
-        ('necromancer', 'Nekromant'),
-        ('berserker', 'Ničitel'),
-        ('druid', 'Druid')
     )
     ATRIBUTS_CHOICES = (
         ('strength', 'Síla'),
@@ -54,7 +60,8 @@ class Playerinfo(AbstractUser):
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     rasa = models.CharField(max_length=20, choices=RASA_CHOICES, blank=True, null=True)
     povolani = models.CharField(max_length=20, choices=POVOLANI_CHOICES, blank=True, null=True)
-    poz = models.CharField(max_length=200, blank=True, null=True)
+    item_type = models.CharField(max_length=20, choices=ITEM_TYPE_CHOICES, blank=True, null=True)
+    date_joined = models.DateTimeField(default=timezone.now)
 
 def __str__(self):
     return self.username
@@ -162,8 +169,9 @@ class Atributs(models.Model):
 
     suma_hp = models.IntegerField(("Počet životů"), default=100, blank=True, null=True)
     hp_base = models.FloatField(("Bonus k životům"), default=100, blank=True, null=True)
-    hp_plus = models.FloatField(("plus k životům"), default=0, blank=True, null=True)
-    hp_items = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
+    hp_rasa = models.FloatField(("Životy z rasy"), default=0, blank=True, null=True)
+    hp_vit = models.FloatField(("plus k životům"), default=0, blank=True, null=True)
+    hp_koeficient = models.FloatField(("Koeficient k životům"), default=1.0, blank=True, null=True)
     hp_bonus_procenta = models.FloatField(("Bonus k životům (%)"), default=0, blank=True, null=True)
 
     suma_strength = models.IntegerField(("Síla"), default=1, blank=True, null=True)
@@ -208,9 +216,9 @@ class Atributs(models.Model):
     def save(self, *args, **kwargs):
     # HP
         self.hp_base = 99 + (XP_LVL.objects.get(hrac=self.hrac).lvl ** 2)
-        self.hp_plus = (self.suma_vitality) * (self.suma_vitality / 10)
-        self.suma_hp = self.hp_base + self.hp_plus
-        self.hp_bonus_procenta = (self.hp_plus) / (self.suma_hp / 100)
+        self.hp_vit = (self.suma_vitality) * (self.suma_vitality / 10)
+        self.suma_hp = ((self.hp_base) + (self.hp_vit) + (self.hp_rasa)) * (self.hp_koeficient)
+        self.hp_bonus_procenta = (self.hp_vit) / (self.suma_hp / 100)
     # OSTATNÍ ATRIBUTY
         self.suma_strength = self.strength_base + self.strength_plus + self.strength_items
         self.suma_dexterity = self.dexterity_base + self.dexterity_plus + self.dexterity_items
@@ -236,55 +244,130 @@ class Character_bonus(models.Model):
 
 
 class ShopOffer(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='shop_offers', blank=True)
-    item_id = models.IntegerField(default=1, blank=True)
-    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True)
-    item_name = models.CharField(max_length=100, blank=True)
-    item_price = models.PositiveIntegerField(blank=True, default=1)
-    item_description = models.TextField(blank=True)
-    item_level_required = models.PositiveIntegerField(blank=True, default=1)
-    item_level_stop = models.PositiveIntegerField(blank=True, default=1)
-    item_weapon_type = models.CharField(max_length=20, blank=True, default=1)
-    item_base_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_min_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_max_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_slots = models.PositiveIntegerField(blank=True, default=1)
+    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='shop_offer', blank=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    item_id = models.IntegerField(default=0, blank=True, null=True)
+    img_init = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(max_length=500, blank=True, null=True)
+    level_required = models.IntegerField(default=1, blank=True, null=True)
+    level_stop = models.IntegerField(default=10, blank=True, null=True)
+    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
+    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, default=None)
+
+    slots = models.IntegerField(default=0, blank=True, null=True)
+    slot_1_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_1_value = models.IntegerField(blank=True, null=True)
+    slot_2_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_2_value = models.IntegerField(blank=True, null=True)
+    slot_3_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_3_value = models.IntegerField(blank=True, null=True)
+    slot_4_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_4_value = models.IntegerField(blank=True, null=True)
+
+    price = models.IntegerField(default=0)
+
+    min_dmg = models.IntegerField(default=0, blank=True, null=True)
+    max_dmg = models.IntegerField(default=1, blank=True, null=True)
+    prum_dmg = models.FloatField(default=0, blank=True, null=True)
+
+    armor = models.IntegerField(default=0, blank=True, null=True)
+
+    str_bonus = models.IntegerField(default=0, blank=True, null=True)
+    dex_bonus = models.IntegerField(default=0, blank=True, null=True)
+    int_bonus = models.IntegerField(default=0, blank=True, null=True)
+    vit_bonus = models.IntegerField(default=0, blank=True, null=True)
+    luk_bonus = models.IntegerField(default=0, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.img_init = f"{self.name}.png"
+        self.prum_dmg = (self.min_dmg + self.max_dmg) / 2
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.item_name} (Cena: {self.item_price} zlaťáků)"
+        return self.name
     
 class INV(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='inventory', blank=True)
-    item_id = models.IntegerField(default=1, blank=True)
-    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True)
-    item_name = models.CharField(max_length=100, blank=True)
-    item_price = models.PositiveIntegerField(blank=True, default=1)
-    item_description = models.TextField(blank=True)
-    item_level_required = models.PositiveIntegerField(blank=True, default=1)
-    item_level_stop = models.PositiveIntegerField(blank=True, default=1)
-    item_weapon_type = models.CharField(max_length=20, blank=True, default=1)
-    item_base_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_min_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_max_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_slots = models.PositiveIntegerField(blank=True, default=1)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    item_id = models.IntegerField(default=0, blank=True, null=True)
+    img_init = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(max_length=500, blank=True, null=True)
+    level_required = models.IntegerField(default=1, blank=True, null=True)
+    level_stop = models.IntegerField(default=10, blank=True, null=True)
+    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
+    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, default=None)
+
+    slots = models.IntegerField(default=0, blank=True, null=True)
+    slot_1_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_1_value = models.IntegerField(blank=True, null=True)
+    slot_2_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_2_value = models.IntegerField(blank=True, null=True)
+    slot_3_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_3_value = models.IntegerField(blank=True, null=True)
+    slot_4_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_4_value = models.IntegerField(blank=True, null=True)
+
+    price = models.IntegerField(default=0)
+
+    min_dmg = models.IntegerField(default=0, blank=True, null=True)
+    max_dmg = models.IntegerField(default=1, blank=True, null=True)
+    prum_dmg = models.FloatField(default=0, blank=True, null=True)
+
+    armor = models.IntegerField(default=0, blank=True, null=True)
+
+    str_bonus = models.IntegerField(default=0, blank=True, null=True)
+    dex_bonus = models.IntegerField(default=0, blank=True, null=True)
+    int_bonus = models.IntegerField(default=0, blank=True, null=True)
+    vit_bonus = models.IntegerField(default=0, blank=True, null=True)
+    luk_bonus = models.IntegerField(default=0, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.img_init = f"{self.name}.png"
+        self.prum_dmg = (self.min_dmg + self.max_dmg) / 2
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.item_name} (Cena: {self.item_price} zlaťáků)"
+        return self.name
 
 class EQP(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='equipment', blank=True)
-    item_id = models.IntegerField(default=1, blank=True)
-    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True)
-    item_name = models.CharField(max_length=100, blank=True)
-    item_price = models.PositiveIntegerField(blank=True, default=1)
-    item_description = models.TextField(blank=True)
-    item_level_required = models.PositiveIntegerField(blank=True, default=1)
-    item_level_stop = models.PositiveIntegerField(blank=True, default=1)
-    item_weapon_type = models.CharField(max_length=20, blank=True, default=1)
-    item_base_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_min_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_max_damage = models.PositiveIntegerField(blank=True, default=1)
-    item_slots = models.PositiveIntegerField(blank=True, default=1)
+    hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='eqp', blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    item_id = models.IntegerField(default=0, blank=True, null=True)
+    img_init = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(max_length=500, blank=True, null=True)
+    level_required = models.IntegerField(default=1, blank=True, null=True)
+    level_stop = models.IntegerField(default=10, blank=True, null=True)
+    item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
+    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, default=None)
+
+    slots = models.IntegerField(default=0, blank=True, null=True)
+    slot_1_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_1_value = models.IntegerField(blank=True, null=True)
+    slot_2_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_2_value = models.IntegerField(blank=True, null=True)
+    slot_3_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_3_value = models.IntegerField(blank=True, null=True)
+    slot_4_bonus = models.CharField(max_length=50, blank=True, null=True)
+    slot_4_value = models.IntegerField(blank=True, null=True)
+
+    price = models.IntegerField(default=0)
+
+    min_dmg = models.IntegerField(default=0, blank=True, null=True)
+    max_dmg = models.IntegerField(default=1, blank=True, null=True)
+    prum_dmg = models.FloatField(default=0, blank=True, null=True)
+
+    armor = models.IntegerField(default=0, blank=True, null=True)
+
+    str_bonus = models.IntegerField(default=0, blank=True, null=True)
+    dex_bonus = models.IntegerField(default=0, blank=True, null=True)
+    int_bonus = models.IntegerField(default=0, blank=True, null=True)
+    vit_bonus = models.IntegerField(default=0, blank=True, null=True)
+    luk_bonus = models.IntegerField(default=0, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.img_init = f"{self.name}.png"
+        self.prum_dmg = (self.min_dmg + self.max_dmg) / 2
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.item_name} (Cena: {self.item_price} zlaťáků)"
+        return self.name

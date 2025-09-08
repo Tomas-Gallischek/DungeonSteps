@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Weapons
+from .models import Items
 
 
-admin.site.register(Weapons)
+admin.site.register(Items)

@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('lvl', models.IntegerField(blank=True, default=1, null=True, verbose_name='Úroveň')),
                 ('xp', models.IntegerField(blank=True, default=0, null=True, verbose_name='Zkušenosti')),
-                ('rasa', models.CharField(blank=True, choices=[('Choice:', 'Vyber:'), ('human', 'Člověk'), ('elf', 'Elf'), ('dwarf', 'Trpaslík'), ('urgal', 'Urgal'), ('gnóm', 'Gnóm'), ('shadow', 'Stín')], max_length=20, null=True)),
+                ('rasa', models.CharField(blank=True, choices=[('Choice:', 'Vyber:'), ('human', 'Člověk'), ('elf', 'Elf'), ('dwarf', 'Trpaslík'), ('ork', 'ork'), ('gnóm', 'Gnóm'), ('shadow', 'Stín')], max_length=20, null=True)),
                 ('povolani', models.CharField(blank=True, choices=[('choice:', 'Vyber:'), ('ranger', 'Hraničář'), ('monk', 'Mnich'), ('warrior', 'Válečník'), ('paladin', 'Paladin'), ('mage', 'Mág'), ('rogue', 'Roguna'), ('necromancer', 'Nekromant'), ('berserker', 'Ničitel'), ('druid', 'Druid')], max_length=20, null=True)),
                 ('hrac', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

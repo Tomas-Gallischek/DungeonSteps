@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='atributs',
-            name='hp_plus',
+            name='hp_vit',
             field=models.FloatField(blank=True, default=0, null=True, verbose_name='plus k životům'),
         ),
     ]

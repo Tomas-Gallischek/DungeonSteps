@@ -26,6 +26,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='playerinfo',
             name='rasa',
-            field=models.CharField(blank=True, choices=[('Choice:', 'Vyber:'), ('human', 'Člověk'), ('elf', 'Elf'), ('dwarf', 'Trpaslík'), ('urgal', 'Urgal'), ('gnóm', 'Gnóm'), ('shadow', 'Stín')], max_length=20, null=True),
+            field=models.CharField(blank=True, choices=[('Choice:', 'Vyber:'), ('human', 'Člověk'), ('elf', 'Elf'), ('dwarf', 'Trpaslík'), ('ork', 'ork'), ('gnóm', 'Gnóm'), ('shadow', 'Stín')], max_length=20, null=True),
         ),
     ]

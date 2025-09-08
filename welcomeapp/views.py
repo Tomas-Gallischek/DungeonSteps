@@ -2,7 +2,7 @@ from re import S
 from django.shortcuts import render
 from django.shortcuts import redirect, render
 from django.shortcuts import render, redirect
-from .rasy_povolani import rasa_bonus_create
+from .rasy_povolani import rasa_povolani_bonus_create
 from hracapp.models import EQP, INV, XP_LVL, Atributs, Character_bonus, Economy, ShopOffer, XP_Log
 from .forms import RegistrationForm
 from django.contrib.auth import login
@@ -28,7 +28,7 @@ def register(request):
             EQP.objects.create(hrac=user)
             
             login(request, user)
-
+            rasa_povolani_bonus_create(request) # <-- Naštení základních hodnota atributů
             print(f"Uživatel {user.username} byl úspěšně zaregistrován a přihlášen.")
 
             return redirect('profile-url')

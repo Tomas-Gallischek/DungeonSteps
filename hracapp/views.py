@@ -1,22 +1,21 @@
-from hmac import new
-import json
 from django.contrib.auth import logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
-from welcomeapp.rasy_povolani import rasa_bonus_create
-from .xp_lvl import plus_xp
+from .off_deff import off_stats, def_stats
 from . models import EQP, INV, XP_LVL, Economy, Atributs
 
 
 @login_required
 def profile(request):
-    rasa_bonus_create(request) # <-- Naštení základních hodnota atributů
-    inventory_items = inventory(request)
 
+    inventory_items = inventory(request)
     equipment_items = equipment(request)
+    offence = off_stats(request)
+    defense = def_stats(request)
+
+
 
     context = {
     # XP A LVL
@@ -37,7 +36,7 @@ def profile(request):
         'base_vitality': Atributs.objects.get(hrac=request.user).vitality_base,
         'base_luck': Atributs.objects.get(hrac=request.user).luck_base,
     # ATRIBUTY - PLUS
-        'plus_hp': Atributs.objects.get(hrac=request.user).hp_plus,
+        'plus_hp': Atributs.objects.get(hrac=request.user).hp_vit,
         'plus_strength': Atributs.objects.get(hrac=request.user).strength_plus,
         'plus_dexterity': Atributs.objects.get(hrac=request.user).dexterity_plus,
         'plus_intelligence': Atributs.objects.get(hrac=request.user).intelligence_plus,
@@ -65,7 +64,9 @@ def profile(request):
     # EQUIP
         'equipment_items': equipment_items,
     # OSTATNÍ
-
+        'rasa': request.user.rasa,
+        'povolani': request.user.povolani,
+        'hrac': request.user,
     }
        
 
