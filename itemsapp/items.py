@@ -1,4 +1,5 @@
 import os
+from turtle import st
 from urllib import request
 import django
 import sys
@@ -161,6 +162,20 @@ def items_generator(request):
         luk_bonus = random.randint(0, round(lvl * 1.5))
         if luk_bonus < lvl:
             luk_bonus = 0
+
+        if str_bonus == 0 and dex_bonus == 0 and int_bonus == 0 and vit_bonus == 0 and luk_bonus == 0:
+            i = random.randint(1, 5)
+            if i == 1:
+                str_bonus = random.randint(lvl, round(lvl * 1.5))
+            elif i == 2:
+                dex_bonus = random.randint(lvl, round(lvl * 1.5))
+            elif i == 3:
+                int_bonus = random.randint(lvl, round(lvl * 1.5))
+            elif i == 4:
+                vit_bonus = random.randint(lvl, round(lvl * 1.5))
+            elif i == 5:
+                luk_bonus = random.randint(lvl, round(lvl * 1.5))
+
     else:
         str_bonus = None
         dex_bonus = None
@@ -218,11 +233,7 @@ if __name__ == "__main__": # <-- KÓD PRO SPRÁVNÉ SPUŠTĚNÍ PŘI TESTOVÁNÍ
     from itemsapp.models import Items
     # Spuštění testu s konkrétním uživatelem
     request = {
-        'user': 'Ewill',
-        'lvl': 20,
-        'rasa': 'člověk',
-        'povolani': 'hunter',
-        'item_type': 'light',
+
 
     }
 
