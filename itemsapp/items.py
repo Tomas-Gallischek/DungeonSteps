@@ -34,7 +34,11 @@ def items_generator(request):
 
 # PŘIŘAZENÍ -- již existujících -- VLASTNOSTÍ NOVÉHO PŘEDMĚTU
     name = new_item.name
-    item_id = new_item.item_id
+
+    id_random = random.randint(1, 999999)
+
+
+    item_id = id_random
     img_init = new_item.img_init
     description = new_item.description
     level_required = new_item.level_required

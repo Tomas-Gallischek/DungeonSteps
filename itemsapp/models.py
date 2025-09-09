@@ -22,7 +22,7 @@ class Items(models.Model):
     )
 
     name = models.CharField(max_length=100, blank=True, null=True)
-    item_id = models.CharField(max_length=100, unique=True)
+    item_id = models.CharField(max_length=100, blank=True, null=True)
     img_init = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(max_length=500, blank=True, null=True)
     level_required = models.IntegerField(default=1, blank=True, null=True)

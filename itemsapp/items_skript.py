@@ -34,10 +34,7 @@ for one_item in item_list:
     name = one_item
 
     id = ""
-    for i in range(10):
-        random_pismeno = random.choice(string.ascii_letters)
-        random_cislo = random.randint(1, 100)
-        id += f"{random_pismeno}{random_cislo}"
+
 
     description = f"Popis předmětu {one_item}"
 

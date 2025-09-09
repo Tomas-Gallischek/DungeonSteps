@@ -20,7 +20,7 @@ def full_shop(request):
         ShopOffer.objects.create(
             hrac=user,
             item_id=new_item['item_id'],
-            item_name=new_item['item_name'],
+            name=new_item['name'],
             img_init=new_item['img_init'],
             description=new_item['description'],
             level_required=new_item['level_required'],
