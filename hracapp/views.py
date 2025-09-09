@@ -12,10 +12,6 @@ def profile(request):
 
     inventory_items = inventory(request)
     equipment_items = equipment(request)
-    offence = off_stats(request)
-    defense = def_stats(request)
-
-
 
     context = {
     # XP A LVL

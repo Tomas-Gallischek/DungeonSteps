@@ -11,25 +11,43 @@ def full_shop(request):
     user = request.user
     shop_offers = ShopOffer.objects.filter(hrac=user)
     shop_offers.delete()
-    typy_itemu = ['weapon']
-    item_id = 1
-    for one in range(6):
+    for one in range(8):
         print(f"Spuštění generování položek")
-# ZÁKLADNÍ NASTAVENÍ A INPORTY
         user = request.user
         new_item = items_generator(request)
+        item_id = new_item.item_id
+        item_name = new_item.name
+        print(f"Vygenerovaná položka: {item_name}, ID: {item_id}")
         
-# GENEROVÁNÍ UNIKÁTNÍHO ID
-        item_id_generace = [str(new_item['level_required']), str(new_item['level_stop']), str(new_item['base_damage']), str(new_item['min_damage']), str(new_item['max_damage']), str(new_item['slots']), str(new_item['price']), str(random.randint(1, 99))]
-        id_conver_number = "".join(item_id_generace)
-        item_id = int(id_conver_number)
-        item_type = random.choice(typy_itemu)[0]
-
         ShopOffer.objects.create(
             hrac=user,
             item_id=item_id,
-            item_type=item_type,
-            item_data=new_item
+            name=item_name,
+            img_init=new_item.img_init,
+            description=new_item.description,
+            level_required=new_item.level_required,
+            level_stop=new_item.level_stop,
+            item_type=new_item.item_type,
+            item_category=new_item.item_category,
+            slots=new_item.slots,
+            slot_1_bonus=new_item.slot_1_bonus,
+            slot_1_value=new_item.slot_1_value,
+            slot_2_bonus=new_item.slot_2_bonus,
+            slot_2_value=new_item.slot_2_value,
+            slot_3_bonus=new_item.slot_3_bonus,
+            slot_3_value=new_item.slot_3_value,
+            slot_4_bonus=new_item.slot_4_bonus,
+            slot_4_value=new_item.slot_4_value,
+            price=new_item.price,
+            min_dmg = new_item.min_dmg,
+            max_dmg = new_item.max_dmg,
+            prum_dmg = new_item.prum_dmg,
+            armor=new_item.armor,
+            str_bonus=new_item.str_bonus,
+            dex_bonus=new_item.dex_bonus,
+            int_bonus=new_item.int_bonus,
+            vit_bonus=new_item.vit_bonus,
+            luk_bonus=new_item.luk_bonus,
         )
         print(f"Uložení položky do databáze")
 

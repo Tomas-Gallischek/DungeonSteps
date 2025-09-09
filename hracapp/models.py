@@ -10,7 +10,6 @@ from django.utils import timezone
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):
     ITEM_TYPE_CHOICES = (
-        ('universal', 'Univerzální'),
         ('heavy', 'Těžké'),
         ('light', 'Lehké'),
         ('magic', 'Magické'),
@@ -252,7 +251,7 @@ class ShopOffer(models.Model):
     level_required = models.IntegerField(default=1, blank=True, null=True)
     level_stop = models.IntegerField(default=10, blank=True, null=True)
     item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
-    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, default=None)
+    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, blank=True, null=True)
 
     slots = models.IntegerField(default=0, blank=True, null=True)
     slot_1_bonus = models.CharField(max_length=50, blank=True, null=True)
@@ -295,7 +294,7 @@ class INV(models.Model):
     level_required = models.IntegerField(default=1, blank=True, null=True)
     level_stop = models.IntegerField(default=10, blank=True, null=True)
     item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
-    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, default=None)
+    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, blank=True, null=True)
 
     slots = models.IntegerField(default=0, blank=True, null=True)
     slot_1_bonus = models.CharField(max_length=50, blank=True, null=True)
@@ -338,7 +337,7 @@ class EQP(models.Model):
     level_required = models.IntegerField(default=1, blank=True, null=True)
     level_stop = models.IntegerField(default=10, blank=True, null=True)
     item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
-    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, default=None)
+    item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, blank=True, null=True)
 
     slots = models.IntegerField(default=0, blank=True, null=True)
     slot_1_bonus = models.CharField(max_length=50, blank=True, null=True)
