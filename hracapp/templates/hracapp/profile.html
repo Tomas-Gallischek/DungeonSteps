@@ -96,24 +96,32 @@
 <h1>INVENTÁŘ</h1>
 {% for item in inventory_items %}
     {% if item.item_id > 1 %}
-    <p>Název: {{ item.item_name }}</p>
-    <p>Cena: {{ item.item_price }} goldů</p>
+    
+    <p>Název: {{ item.name }}</p>
+    <P>Cena: {{ item.price }} goldů</P>
+    <P>Kategorie: {{ item.item_category }}</P>
+
     <form method="POST" action="{% url 'eqp-url' item.item_id %}">
         {% csrf_token %}
     <button type="submit">Nasadit</button>
     </form>
+    
     {% endif %}
 {% endfor %}
 
 <h1>EQUIP</h1>
 {% for item in equipment_items %}
     {% if item.item_id > 1 %}
-    <p>Název: {{ item.item_name }}</p>
-    <p>Cena: {{ item.item_price }} goldů</p>
+
+    <p>Název: {{ item.name }}</p>
+    <P>Cena: {{ item.price }} goldů</P>
+    <P>Kategorie: {{ item.item_category }}</P>
+
     <form method="POST" action="{% url 'de-eqp-url' item.item_id %}">
         {% csrf_token %}
     <button type="submit">Sundat</button>
     </form>
+
     {% endif %}
 {% endfor %}
 

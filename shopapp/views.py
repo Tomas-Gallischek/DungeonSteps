@@ -36,42 +36,48 @@ def shop_reset(request):
 def shop_buy(request, item_id):
     print(f"Spuštění funkce nákupu položky: {item_id}")
     user = request.user
-    item_to_buy = ShopOffer.objects.get(id=item_id)
-    gold_bill = item_to_buy.item_price
+    item_to_buy = ShopOffer.objects.get(item_id=item_id)
     economy = Economy.objects.get(hrac=user)
-    golds_before = economy.gold
 
-    if economy.gold >= item_to_buy.item_price:
+    if economy.gold >= item_to_buy.price:
 
-        buy_or_sell(request, 'gold', item_to_buy.item_price, 'minus')
+        buy_or_sell(request, 'gold', item_to_buy.price, 'minus')
 
         INV.objects.create(
-            hrac=item_to_buy.hrac,
+            hrac=user,
             item_id=item_to_buy.item_id,
+            name=item_to_buy.name,
+            img_init=item_to_buy.img_init,
+            description=item_to_buy.description,
+            level_required=item_to_buy.level_required,
+            level_stop=item_to_buy.level_stop,
             item_type=item_to_buy.item_type,
-            item_name=item_to_buy.item_name,
-            item_price=item_to_buy.item_price,
-            item_description=item_to_buy.item_description,
-            item_level_required=item_to_buy.item_level_required,
-            item_level_stop=item_to_buy.item_level_stop,
-            item_weapon_type=item_to_buy.item_weapon_type,
-            item_base_damage=item_to_buy.item_base_damage,
-            item_min_damage=item_to_buy.item_min_damage,
-            item_max_damage=item_to_buy.item_max_damage,
-            item_slots=item_to_buy.item_slots
+            item_category=item_to_buy.item_category,
+            slots=item_to_buy.slots,
+            slot_1_bonus=item_to_buy.slot_1_bonus,
+            slot_1_value=item_to_buy.slot_1_value,
+            slot_2_bonus=item_to_buy.slot_2_bonus,
+            slot_2_value=item_to_buy.slot_2_value,
+            slot_3_bonus=item_to_buy.slot_3_bonus,
+            slot_3_value=item_to_buy.slot_3_value,
+            slot_4_bonus=item_to_buy.slot_4_bonus,
+            slot_4_value=item_to_buy.slot_4_value,
+            price=item_to_buy.price,
+            min_dmg=item_to_buy.min_dmg,
+            max_dmg=item_to_buy.max_dmg,
+            prum_dmg=item_to_buy.prum_dmg,
+            armor=item_to_buy.armor,
+            str_bonus=item_to_buy.str_bonus,
+            dex_bonus=item_to_buy.dex_bonus,
+            int_bonus=item_to_buy.int_bonus,
+            vit_bonus=item_to_buy.vit_bonus,
+            luk_bonus=item_to_buy.luk_bonus,
         )
 
-        ShopOffer.objects.filter(id=item_id).delete()
-        
-        print(f"Nákup položky: {item_to_buy.item_name} za cenu {item_to_buy.item_price} zlaťáků")
+        ShopOffer.objects.filter(item_id=item_id).delete()
 
-
+        print(f"Nákup položky: {item_to_buy.name} za cenu {item_to_buy.price} zlaťáků")
     else:
-        print(f"Nedostatek zlata na nákup položky: {item_to_buy.item_name}")
+        print(f"Nedostatek zlata na nákup položky: {item_to_buy.name}")
 
-    golds_after = economy.gold
-
-
-    
-    print(f"Zlato před nákupem: {golds_before}, Zlato po nákupu: {golds_after}")
     return redirect(reverse('shop-url'))

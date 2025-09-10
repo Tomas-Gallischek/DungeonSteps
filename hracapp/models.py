@@ -329,7 +329,7 @@ class INV(models.Model):
         return self.name
 
 class EQP(models.Model):
-    hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='eqp', blank=True, null=True)
+    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='eqp', blank=True, null=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     item_id = models.IntegerField(default=0, blank=True, null=True)
     img_init = models.CharField(max_length=200, blank=True, null=True)

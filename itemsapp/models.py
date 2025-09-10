@@ -75,6 +75,7 @@ class Items_bonus(models.Model):
     bonus_type = models.CharField(max_length=20, choices=BONUS_TYPE_CHOICES, blank=True, null=True)
     bonus_min_value = models.IntegerField(default=0, blank=True, null=True)
     bonus_max_value = models.IntegerField(default=0, blank=True, null=True)
+    flat_or_procent = models.CharField(max_length=10,default="%", blank=True, null=True)
 
     def __str__(self):
-        return f" {self.bonus_id} {self.bonus_name} {self.bonus_min_value} - {self.bonus_max_value}"
+        return f" {self.flat_or_procent} --- {self.bonus_name} {self.bonus_min_value} - {self.bonus_max_value}"

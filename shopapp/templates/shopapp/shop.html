@@ -34,36 +34,24 @@
             <p><strong>Požadovaná úroveň:</strong> {{ item.level_required }}</p>
         {% endif %}
 
-        {% if item.level_stop %}
-            <p><strong>Stop úroveň:</strong> {{ item.level_stop }}</p>
-        {% endif %}
-
-        {% if item.item_type %}
-            <p><strong>Typ položky:</strong> {{ item.item_type }}</p>
-        {% endif %}
-
         {% if item.item_category %}
             <p><strong>Kategorie:</strong> {{ item.item_category }}</p>
         {% endif %}
-
-        {% if item.slots %}
-            <p><strong>Sloty:</strong> {{ item.slots }}</p>
-        {% endif %}
         
         {% if item.slot_1_bonus and item.slot_1_value %}
-            <p><strong>Bonus slotu 1:</strong> {{ item.slot_1_bonus }} ({{ item.slot_1_value }})</p>
+            <p><strong>{{ item.slot_1_bonus }}: </strong> ({{ item.slot_1_value }})</p>
         {% endif %}
 
         {% if item.slot_2_bonus and item.slot_2_value %}
-            <p><strong>Bonus slotu 2:</strong> {{ item.slot_2_bonus }} ({{ item.slot_2_value }})</p>
+            <p><strong>{{ item.slot_2_bonus }}:</strong> ({{ item.slot_2_value }})</p>
         {% endif %}
 
         {% if item.slot_3_bonus and item.slot_3_value %}
-            <p><strong>Bonus slotu 3:</strong> {{ item.slot_3_bonus }} ({{ item.slot_3_value }})</p>
+            <p><strong>{{ item.slot_3_bonus }}:</strong> ({{ item.slot_3_value }})</p>
         {% endif %}
 
         {% if item.slot_4_bonus and item.slot_4_value %}
-            <p><strong>Bonus slotu 4:</strong> {{ item.slot_4_bonus }} ({{ item.slot_4_value }})</p>
+            <p><strong>{{ item.slot_4_bonus }}:</strong> ({{ item.slot_4_value }})</p>
         {% endif %}
 
         {% if item.price %}
@@ -76,10 +64,6 @@
 
         {% if item.max_dmg %}
             <p><strong>Maximální poškození:</strong> {{ item.max_dmg }}</p>
-        {% endif %}
-
-        {% if item.prum_dmg %}
-            <p><strong>Průměrné poškození:</strong> {{ item.prum_dmg }}</p>
         {% endif %}
 
         {% if item.armor %}

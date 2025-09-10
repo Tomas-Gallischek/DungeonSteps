@@ -74,13 +74,14 @@ def items_generator(request):
             luck_koef = 5
 
         random_bonus = random.choice(all_item_bonus)
+        random_bonus_name = random_bonus.bonus_name
         bonus_min_value = random_bonus.bonus_min_value
         bonus_max_value = random_bonus.bonus_max_value
         bonus_definitiv_valute = random.randint(bonus_min_value, round(bonus_max_value / 4)) * luck_koef
         if bonus_definitiv_valute > bonus_max_value:
             bonus_definitiv_valute = bonus_max_value
 
-        return random_bonus, bonus_definitiv_valute
+        return random_bonus_name, bonus_definitiv_valute
 
     if slots == 0:
         slot_1_bonus, slot_1_value = "", 0

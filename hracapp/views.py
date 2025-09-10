@@ -87,53 +87,84 @@ def equipment(request):
     return equipment_items
 
 def equip_item(request, item_id):
+    print(f"Equipping item with ID: {item_id}")
     user = request.user
     inventary = INV.objects.filter(hrac=user)
     item = inventary.get(item_id=item_id)
-    item_to_equip = EQP (
-        hrac=user,
+
+    EQP.objects.create(
+        hrac=item.hrac,
         item_id=item.item_id,
+        name=item.name,
+        img_init=item.img_init,
+        description=item.description,
+        level_required=item.level_required,
+        level_stop=item.level_stop,
         item_type=item.item_type,
-        item_name=item.item_name,
-        item_price=item.item_price,
-        item_description=item.item_description,
-        item_level_stop=item.item_level_stop,
-        item_level_required=item.item_level_required,
-        item_base_damage=item.item_base_damage,
-        item_weapon_type=item.item_weapon_type,
-        item_max_damage=item.item_max_damage,
-        item_min_damage=item.item_min_damage,
-        item_slots=item.item_slots
+        item_category=item.item_category,
+        slots=item.slots,
+        slot_1_bonus=item.slot_1_bonus,
+        slot_1_value=item.slot_1_value,
+        slot_2_bonus=item.slot_2_bonus,
+        slot_2_value=item.slot_2_value,
+        slot_3_bonus=item.slot_3_bonus,
+        slot_3_value=item.slot_3_value,
+        slot_4_bonus=item.slot_4_bonus,
+        slot_4_value=item.slot_4_value,
+        price=item.price,
+        min_dmg=item.min_dmg,
+        max_dmg=item.max_dmg,
+        prum_dmg=item.prum_dmg,
+        armor=item.armor,
+        str_bonus=item.str_bonus,
+        dex_bonus=item.dex_bonus,
+        int_bonus=item.int_bonus,
+        vit_bonus=item.vit_bonus,
+        luk_bonus=item.luk_bonus,
     )
-    item_to_equip.save()
 
     INV.objects.filter(hrac=user, item_id=item_id).delete()
 
-    print(f"Item: {item.item_name} byl úspěšně nasazen.")
+    print(f"Item: {item.name} byl úspěšně nasazen.")
 
     return redirect(reverse('profile-url'))
 
 def dequip_item(request, item_id):
     user = request.user
     equipment = EQP.objects.filter(hrac=user)
-    item = equipment.filter(item_id=item_id).first()
-    item_to_de_equip = INV (
+    item = equipment.get(item_id=item_id)
+
+    INV.objects.create(
         hrac=user,
         item_id=item.item_id,
+        name=item.name,
+        img_init=item.img_init,
+        description=item.description,
+        level_required=item.level_required,
+        level_stop=item.level_stop,
         item_type=item.item_type,
-        item_name=item.item_name,
-        item_price=item.item_price,
-        item_description=item.item_description,
-        item_level_stop=item.item_level_stop,
-        item_level_required=item.item_level_required,
-        item_base_damage=item.item_base_damage,
-        item_weapon_type=item.item_weapon_type,
-        item_max_damage=item.item_max_damage,
-        item_min_damage=item.item_min_damage,
-        item_slots=item.item_slots
+        item_category=item.item_category,
+        slots=item.slots,
+        slot_1_bonus=item.slot_1_bonus,
+        slot_1_value=item.slot_1_value,
+        slot_2_bonus=item.slot_2_bonus,
+        slot_2_value=item.slot_2_value,
+        slot_3_bonus=item.slot_3_bonus,
+        slot_3_value=item.slot_3_value,
+        slot_4_bonus=item.slot_4_bonus,
+        slot_4_value=item.slot_4_value,
+        price=item.price,
+        min_dmg=item.min_dmg,
+        max_dmg=item.max_dmg,
+        prum_dmg=item.prum_dmg,
+        armor=item.armor,
+        str_bonus=item.str_bonus,
+        dex_bonus=item.dex_bonus,
+        int_bonus=item.int_bonus,
+        vit_bonus=item.vit_bonus,
+        luk_bonus=item.luk_bonus,
     )
-    item_to_de_equip.save()
 
     EQP.objects.filter(hrac=user, item_id=item_id).delete()
-    print(f"Item: {item.item_name} byl úspěšně sundán.")
+    print(f"Item: {item.name} byl úspěšně sundán.")
     return redirect(reverse('profile-url'))
