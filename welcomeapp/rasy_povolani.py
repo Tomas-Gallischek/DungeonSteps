@@ -1,8 +1,9 @@
+from tkinter import Place
 from turtle import up
 from urllib import request
 from django.contrib.auth.decorators import login_required
 from hracapp import models
-from hracapp.models import Atributs
+from hracapp.models import Atributs, Playerinfo
 
 @login_required
 def rasa_povolani_bonus_create(request):
@@ -102,5 +103,7 @@ def rasa_povolani_bonus_create(request):
     atributs_instance.charisma_base = charisma_base
     atributs_instance.luck_base = luck_base
     atributs_instance.dmg_atribut = dmg_atribut
+    Playerinfo.objects.filter(username=user.username).update(item_type=item_type)
     atributs_instance.save()
+    print("Základní staty byly úspěšně vytvořeny a uloženy do databáze.")
 

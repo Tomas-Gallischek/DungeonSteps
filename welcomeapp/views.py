@@ -3,13 +3,14 @@ from django.shortcuts import render
 from django.shortcuts import redirect, render
 from django.shortcuts import render, redirect
 from .rasy_povolani import rasa_povolani_bonus_create
-from hracapp.models import EQP, INV, XP_LVL, Atributs, Character_bonus, Economy, ShopOffer, XP_Log
+from hracapp.models import EQP, INV, XP_LVL, Atributs, Character_bonus, Economy, Playerinfo, ShopOffer, XP_Log
 from .forms import RegistrationForm
 from django.contrib.auth import login
 
 
 
 def index(request):
+
     return render(request, 'welcomeapp/index.html')
 
 def register(request):

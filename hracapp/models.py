@@ -62,9 +62,9 @@ class Playerinfo(AbstractUser):
     item_type = models.CharField(max_length=20, choices=ITEM_TYPE_CHOICES, blank=True, null=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
-def __str__(self):
-    return self.username
-
+    def __str__(self):
+        return self.username
+    
 # VŠECHNY VNOŘENÉ DATABÁZE
 class XP_LVL(models.Model):
     hrac = models.OneToOneField(Playerinfo, on_delete=models.CASCADE, related_name='xp_lvl', blank=True)
