@@ -36,7 +36,7 @@ for one_item in item_list:
     id = ""
 
 
-    description = f"Popis předmětu {one_item}"
+    description = f"Popis předmětu - {one_item}"
 
     level_required = random.randint(1, 20)
     level_stop = level_required + random.randint(5, 20)
@@ -54,16 +54,6 @@ for one_item in item_list:
         level_stop = level_stop,
         item_type = type,
         item_category = category,
-
-        slots = 0,
-        slot_1_bonus = "",
-        slot_1_value = 0,
-        slot_2_bonus = "",
-        slot_2_value = 0,
-        slot_3_bonus = "",
-        slot_3_value = 0,
-        slot_4_bonus = "",
-        slot_4_value = 0,
 
         price = 0,
 

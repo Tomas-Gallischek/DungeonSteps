@@ -78,4 +78,4 @@ class Items_bonus(models.Model):
     flat_or_procent = models.CharField(max_length=10,default="%", blank=True, null=True)
 
     def __str__(self):
-        return f" {self.flat_or_procent} --- {self.bonus_name} {self.bonus_min_value} - {self.bonus_max_value}"
+        return f" {self.bonus_id} - {self.flat_or_procent} --- {self.bonus_name} {self.bonus_min_value} - {self.bonus_max_value}"

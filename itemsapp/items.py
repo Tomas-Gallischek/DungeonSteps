@@ -22,7 +22,7 @@ def items_generator(request):
 
     print(f"Generuji předmět pro uživatele: {user}, level: {lvl}, rasa: {rasa}, povolani: {povolani}")
 
-# FILTRACE VŠECH EXISTUJÍCÍCH PŘEDMĚTŮ
+# FILTRACE VŠECH EXISTUJÍCÍCH PŘEDMĚTŮ VE HŘE
     all_items = Items.objects.all()
     all_item_bonus = Items_bonus.objects.all()
 # FILTRACE PODLE LEVELU
@@ -35,10 +35,7 @@ def items_generator(request):
 
 # PŘIŘAZENÍ -- již existujících -- VLASTNOSTÍ NOVÉHO PŘEDMĚTU
     name = new_item.name
-
     id_random = random.randint(1, 999999)
-
-
     item_id = id_random
     img_init = new_item.img_init
     description = new_item.description
@@ -74,41 +71,99 @@ def items_generator(request):
             luck_koef = 5
 
         random_bonus = random.choice(all_item_bonus)
-        random_bonus_name = random_bonus.bonus_name
+        random_bonus_id = random_bonus.bonus_id
         bonus_min_value = random_bonus.bonus_min_value
         bonus_max_value = random_bonus.bonus_max_value
         bonus_definitiv_valute = random.randint(bonus_min_value, round(bonus_max_value / 4)) * luck_koef
         if bonus_definitiv_valute > bonus_max_value:
             bonus_definitiv_valute = bonus_max_value
 
-        return random_bonus_name, bonus_definitiv_valute
-
-    if slots == 0:
-        slot_1_bonus, slot_1_value = "", 0
-        slot_2_bonus, slot_2_value = "", 0
-        slot_3_bonus, slot_3_value = "", 0
-        slot_4_bonus, slot_4_value = "", 0
-    if slots == 1:
-        slot_1_bonus, slot_1_value = bonus_generator()
-        slot_2_bonus, slot_2_value = "", 0
-        slot_3_bonus, slot_3_value = "", 0
-        slot_4_bonus, slot_4_value = "", 0
-    if slots == 2:
-        slot_1_bonus, slot_1_value = bonus_generator()
-        slot_2_bonus, slot_2_value = bonus_generator()
-        slot_3_bonus, slot_3_value = "", 0
-        slot_4_bonus, slot_4_value = "", 0
-    if slots == 3:
-        slot_1_bonus, slot_1_value = bonus_generator()
-        slot_2_bonus, slot_2_value = bonus_generator()
-        slot_3_bonus, slot_3_value = bonus_generator()
-        slot_4_bonus, slot_4_value = "", 0
-    if slots == 4:
-        slot_1_bonus, slot_1_value = bonus_generator()
-        slot_2_bonus, slot_2_value = bonus_generator()
-        slot_3_bonus, slot_3_value = bonus_generator()
-        slot_4_bonus, slot_4_value = bonus_generator()
+        return bonus_definitiv_valute, random_bonus_id
     
+    if slots > 0:
+        for one_bonus in range(1, slots + 1):
+            bonus_definitiv_valute, random_bonus_id = bonus_generator()
+
+            if random_bonus_id == 1:
+                crit_bonus += bonus_definitiv_valute
+            else:
+                crit_bonus += 0
+            if random_bonus_id == 2:
+                sance_na_bezvedomi += bonus_definitiv_valute
+            else:
+                sance_na_bezvedomi += 0
+            if random_bonus_id == 3:
+                sance_na_otravu += bonus_definitiv_valute
+            else:
+                sance_na_otravu += 0
+            if random_bonus_id == 4:
+                poskozeni_utokem += bonus_definitiv_valute
+            else:
+                poskozeni_utokem += 0
+            if random_bonus_id == 5:
+                poskozeni_kouzlem += bonus_definitiv_valute
+            else:
+                poskozeni_kouzlem += 0
+            if random_bonus_id == 6:
+                pvp_poskozeni += bonus_definitiv_valute
+            else:
+                pvp_poskozeni += 0
+            if random_bonus_id == 7:
+                pvm_poskozeni += bonus_definitiv_valute
+            else:
+                pvm_poskozeni += 0
+            if random_bonus_id == 8:
+                str_flat_bonus += bonus_definitiv_valute
+            else:
+                str_flat_bonus += 0
+            if random_bonus_id == 9:
+                dex_flat_bonus += bonus_definitiv_valute
+            else:
+                dex_flat_bonus += 0
+            if random_bonus_id == 10:
+                int_flat_bonus += bonus_definitiv_valute
+            else:
+                int_flat_bonus += 0
+            if random_bonus_id == 11:
+                vit_flat_bonus += bonus_definitiv_valute
+            else:
+                vit_flat_bonus += 0 
+            if random_bonus_id == 12:
+                luk_flat_bonus += bonus_definitiv_valute
+            else:
+                luk_flat_bonus += 0
+            if random_bonus_id == 13:
+                odolnost_proti_bezvedomi += bonus_definitiv_valute
+            else:
+                odolnost_proti_bezvedomi += 0
+            if random_bonus_id == 14:
+                odolnost_proti_otrave += bonus_definitiv_valute
+            else:
+                odolnost_proti_otrave += 0
+            if random_bonus_id == 15:
+                light_weapon_resist = bonus_definitiv_valute
+            else:
+                light_weapon_resist = 0
+            if random_bonus_id == 16:
+                heavy_weapon_resist = bonus_definitiv_valute
+            else:
+                heavy_weapon_resist = 0
+            if random_bonus_id == 17:
+                magic_weapon_resist = bonus_definitiv_valute
+            else:
+                magic_weapon_resist = 0
+            if random_bonus_id == 18:
+                pvp_resist = bonus_definitiv_valute
+            else:
+                pvp_resist = 0  
+            if random_bonus_id == 19:
+                pvm_resist = bonus_definitiv_valute
+            else:
+                pvm_resist = 0
+            if random_bonus_id == 20:
+                hp_flat_bonus += bonus_definitiv_valute
+            else:
+                hp_flat_bonus += 0
 # ABY RŮZNÉ KATEGORIE MĚLY RŮZNOU CENU
     if category == 'weapon':
         price_koef = 2
@@ -194,14 +249,6 @@ def items_generator(request):
         'item_type': type,
         'item_category': category,
         'slots': slots,
-        'slot_1_bonus': slot_1_bonus,
-        'slot_1_value': slot_1_value,
-        'slot_2_bonus': slot_2_bonus,
-        'slot_2_value': slot_2_value,
-        'slot_3_bonus': slot_3_bonus,
-        'slot_3_value': slot_3_value,
-        'slot_4_bonus': slot_4_bonus,
-        'slot_4_value': slot_4_value,
         'price': price,
         'min_dmg': min_dmg,
         'max_dmg': max_dmg,
