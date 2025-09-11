@@ -273,6 +273,9 @@ class Atributs(models.Model):
 # aby ForeignKey správně fungoval.
 # from .models import Playerinfo # Uprav, pokud je v jiném souboru
 
+from django.db import models
+from django.db.models import Sum
+
 class Character_bonus(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='char_bonus', blank=True)
     
@@ -287,9 +290,11 @@ class Character_bonus(models.Model):
     hp_flat_it_bonus = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
     pvm_resist_procent_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVP (předměty)"), default=0, blank=True, null=True)
+
     magic_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti magii (předměty)"), default=0, blank=True, null=True)
     heavy_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti těžkým zbraním (předměty)"), default=0, blank=True, null=True)
     light_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti lehkým zbraním (předměty)"), default=0, blank=True, null=True)
+    
     otrava_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti otravě (předměty)"), default=0, blank=True, null=True)
     bezvedomi_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti bezvědomí (předměty)"), default=0, blank=True, null=True)
 
@@ -313,14 +318,11 @@ class Character_bonus(models.Model):
     armor_suma = models.IntegerField(("Celková hodnota brnění (předměty)"), default=0, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-
-        self.armor_armor = EQP.objects.filter(hrac=self.hrac, item_category='armor').aggregate(total_armor=Sum('armor'))['total_armor'] or 0
-        self.armor_helmet = EQP.objects.filter(hrac=self.hrac, item_category='helmet').aggregate(total_armor=Sum('armor'))['total_armor'] or 0
-        self.armor_boots = EQP.objects.filter(hrac=self.hrac, item_category='boots').aggregate(total_armor=Sum('armor'))['total_armor'] or 0
-        self.armor_suma = self.armor_armor + self.armor_helmet + self.armor_boots
+        # ... (zbytek metody je stejný, ale bez suma výpočtů a dotazů na atributy)
 
         # Seznam všech polí, které chceme sečíst
         bonus_fields = [
+            # ... (všechny původní bonus_fields)
             'hp_flat_it_bonus', 'pvm_resist_procenta_it_bonus', 'pvp_resist_procenta_it_bonus',
             'magic_resist_procenta_it_bonus', 'heavy_resist_procenta_it_bonus', 'light_resist_procenta_it_bonus',
             'otrava_resist_procenta_it_bonus', 'bezvedomi_resist_procenta_it_bonus', 'luck_flat_it_bonus',
@@ -345,8 +347,45 @@ class Character_bonus(models.Model):
             sum_value = bonuses.get(f'{field}__sum')
             setattr(self, field, sum_value or 0)
 
-        # Uložíme instanci modelu do databáze
         super().save(*args, **kwargs)
+
+
+# SUPER VYCHITÁVKA OD GEMINI --- UMOŽŇUJE VYTVOŘIRT PROMĚNNOU KTERÁ SE VOLÁ ÚPLNĚ STEJNĚ JAKO ZÁZNAM V DATABÁZI ALE NENÍ TAM NAPEVNO 
+    @property
+    def magic_resist_atr_bonus(self):
+        try:
+            lvl = XP_LVL.objects.get(hrac=self.hrac).lvl
+            return Atributs.objects.get(hrac=self.hrac).suma_intelligence / lvl if lvl != 0 else 0
+        except (XP_LVL.DoesNotExist, Atributs.DoesNotExist):
+            return 0
+
+    @property
+    def heavy_resist_atr_bonus(self):
+        try:
+            lvl = XP_LVL.objects.get(hrac=self.hrac).lvl
+            return Atributs.objects.get(hrac=self.hrac).suma_strength / lvl if lvl != 0 else 0
+        except (XP_LVL.DoesNotExist, Atributs.DoesNotExist):
+            return 0
+    
+    @property
+    def light_resist_atr_bonus(self):
+        try:
+            lvl = XP_LVL.objects.get(hrac=self.hrac).lvl
+            return Atributs.objects.get(hrac=self.hrac).suma_dexterity / lvl if lvl != 0 else 0
+        except (XP_LVL.DoesNotExist, Atributs.DoesNotExist):
+            return 0
+
+    @property
+    def suma_magic_resist(self):
+        return self.magic_resist_procenta_it_bonus + self.magic_resist_atr_bonus
+
+    @property
+    def suma_heavy_resist(self):
+        return self.heavy_resist_procenta_it_bonus + self.heavy_resist_atr_bonus
+
+    @property
+    def suma_light_resist(self):
+        return self.light_resist_procenta_it_bonus + self.light_resist_atr_bonus
 
     def __str__(self):
         # ... (zbytek metody je stejný)

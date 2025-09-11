@@ -238,7 +238,7 @@ def items_generator(request):
         prum_dmg = 0
 
 
-    if category == 'armor':
+    if category == 'armor':        
         armor = round(lvl * 3) + random.randint(0, round(lvl * 2))
 
     elif category == 'helmet':
@@ -248,6 +248,17 @@ def items_generator(request):
         armor = round(lvl * 1.5) + random.randint(0, round(lvl * 1))
     else:
         armor = 0
+
+# Díky tomu mají tankové itemy lepší armor
+
+    if item_type == 'universal' and category in ['armor', 'helmet', 'boots']:
+        armor = round(armor * 1)
+    elif item_type == 'magic' and category in ['armor', 'helmet', 'boots']:
+        armor = round(armor * 0.8)
+    elif item_type == 'heavy' and category in ['armor', 'helmet', 'boots']:
+        armor = round(armor * 1.5)
+    elif item_type == 'light' and category in ['armor', 'helmet', 'boots']:
+        armor = round(armor * 1.2)
 
     print(GREEN + f"ARMOR: {armor}, Kategorie itemu: {category}" + RESET)
 

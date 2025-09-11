@@ -29,7 +29,6 @@ def player_attack(request):
     crit_chance = (player_luck * 5) / lvl
     if crit_chance > 50:
         crit_chance = 50
-    print (f"Šance na kritický zásah je {crit_chance} %")
 
 # OFF BONUSY:
     player_bonus = Character_bonus.objects.get(hrac=user)
@@ -68,17 +67,14 @@ def player_attack(request):
         final_attack = round(final_attack * (2 + crit_dmg_bonus))
         attack_status = "kritický zásah"
 
-        print("Kritický zásah!")
 
-    print (f"Útok je {final_attack} a jedná se o: {attack_status}")
+    p_attack = {
+        'final_attack': final_attack,
+        'attack_status': attack_status,
+        'attack_type': attack_type,
+    }
 
-    player_atack = (
-        final_attack,
-        attack_status,
-        attack_type,
-    )
-
-    return player_atack
+    return p_attack
 
 
 @login_required
@@ -96,9 +92,9 @@ def player_deffence(request):
 
 # DEF BONUSY:
     player_bonus = Character_bonus.objects.get(hrac=user)
-    light_resist = 1 + (player_bonus.light_resist_procenta_it_bonus / 100)
-    heavy_resist = 1 + (player_bonus.heavy_resist_procenta_it_bonus / 100)
-    magic_resist = 1 + (player_bonus.magic_resist_procenta_it_bonus / 100)
+    light_resist = 1 + (player_bonus.suma_light_resist / 100)
+    heavy_resist = 1 + (player_bonus.suma_heavy_resist / 100)
+    magic_resist = 1 + (player_bonus.suma_magic_resist / 100)
     pvm_resist = 1 + (player_bonus.pvm_resist_procent_it_bonus / 100) # < ZMĚNIT AŽ BUDU IMPLMENTOVAT PVP
     # pvp_resist =
     # otrava_resist_procenta_it_bonus = 
@@ -107,20 +103,22 @@ def player_deffence(request):
 
 # IMPORT EQP NENÍ POTŘEBA, PROTOŽE ARMOR SI BERU Z BONUSŮ
     armor = player_bonus.armor_suma
+    bonus_armor = round(armor / 10)
+    random_armor = round(random.randint(1, bonus_armor)) # IMPLMENTACE NÁHODNÉHO ARMORU - 10% VARIACE - KVŮLI VĚTŠÍ PESTROSTI SOUBOJŮ
+    armor += random_armor
 
-    armor_normal = armor * pvm_resist
-    armor_light = armor * light_resist
-    armor_heavy = armor * heavy_resist
-    armor_magic = armor * magic_resist
+    armor_normal = (armor * pvm_resist) * lvl
+    armor_light = (armor * light_resist) * lvl
+    armor_heavy = (armor * heavy_resist) * lvl
+    armor_magic = (armor * magic_resist) * lvl
 
     player_hp = player_atributs.suma_hp
-    print (f"HP hráče je {player_hp} a jeho brnění je {armor} (normální: {armor_normal}, lehké: {armor_light}, těžké: {armor_heavy}, magické: {armor_magic})")
-    player_deffence = (
-        armor_normal,
-        armor_light,
-        armor_heavy,
-        armor_magic,
-        player_hp,
-    )
+    p_deffence = {
+        'armor_normal': armor_normal,
+        'armor_light': armor_light,
+        'armor_heavy': armor_heavy,
+        'armor_magic': armor_magic,
+        'player_hp': player_hp,
+    }
 
-    return player_deffence
+    return p_deffence
