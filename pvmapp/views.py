@@ -6,6 +6,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from hracapp. models import EQP, INV, XP_LVL, Character_bonus, Economy, Atributs
 from .player_off_def import player_attack, player_deffence
+from .mob_generator import mob_gen
+
+def monster_generator(request):
+    mob = mob_gen(request)
+    return render(request, 'pvmapp/pvm_home.html', {'mob': mob})
 
 
 @login_required

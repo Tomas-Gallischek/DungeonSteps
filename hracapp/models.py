@@ -267,15 +267,6 @@ class Atributs(models.Model):
         return f"Atributy pro hráče {hrac_info}"
 
 
-
-
-# Pamatuj, že třída Playerinfo musí být definovaná,
-# aby ForeignKey správně fungoval.
-# from .models import Playerinfo # Uprav, pokud je v jiném souboru
-
-from django.db import models
-from django.db.models import Sum
-
 class Character_bonus(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='char_bonus', blank=True)
     
