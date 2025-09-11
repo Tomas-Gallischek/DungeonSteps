@@ -7,5 +7,6 @@ urlpatterns = [
     path('hracapp/', include('hracapp.urls')),
     path('itemsapp/', include('itemsapp.urls')),
     path('shopapp/', include('shopapp.urls')),
+    path('pvmapp/', include('pvmapp.urls')),
 
 ]

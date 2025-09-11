@@ -1,12 +1,8 @@
-from encodings.punycode import selective_len
-from operator import eq
-from urllib import request
 from django.contrib.auth import logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .off_deff import off_stats, def_stats
 from . models import EQP, INV, XP_LVL, Character_bonus, Economy, Atributs, ShopOffer
 
 
