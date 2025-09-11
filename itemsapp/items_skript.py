@@ -26,7 +26,7 @@ for one_item in item_list:
     category = random.choice(item_categories)
     if category == 'weapon':
         type = random.choice(item_types_weapons)
-    elif category in ['armor', 'helmet']:
+    elif category in ['armor', 'helmet', 'boots']:
         type = random.choice(item_types_armor_helmet)
     else:
         type = random.choice(item_types_other)
@@ -35,6 +35,7 @@ for one_item in item_list:
 
     id = ""
 
+    print(f"Kategorie: {category}, Typ: {type}")
 
     description = f"Popis předmětu - {one_item}"
 

@@ -45,6 +45,8 @@ def items_generator(request):
     type = new_item.item_type
     category = new_item.item_category
 
+    print(f"Kategorie vybraného itemu: {category}")
+
 # PŘIŘAZENÍ NOVÝCH VLASTNOSTÍ NOVÉHO PŘEDMĚTU
     n = random.randint(1, lvl)
     if n <= 5:
@@ -224,23 +226,30 @@ def items_generator(request):
         if min_dmg > max_dmg:
             min_dmg, max_dmg = max_dmg, min_dmg
         prum_dmg = round((min_dmg + max_dmg) / 2)
+
+# JELIKOŽ PROTI UNIVERZÁLNÍM ZBRANÍM NEEXISTUJÍ ZATÍM RESISTENCE, JE TŘEBA JE UŽ V ZÁKLADU OSLABIT
+        if item_type == 'universal':
+            min_dmg = round(min_dmg * 0.8)
+            max_dmg = round(max_dmg * 0.8)
+            prum_dmg = round(prum_dmg * 0.8)
     else:
         min_dmg = 0
         max_dmg = 0
         prum_dmg = 0
 
+
     if category == 'armor':
         armor = round(lvl * 3) + random.randint(0, round(lvl * 2))
-    else:
-        armor = 0
-    if category == 'helmet':
+
+    elif category == 'helmet':
         armor = round(lvl * 2) + random.randint(0, round(lvl * 1.5))   
-    else:
-        armor = 0 
-    if category == 'boots':
+
+    elif category == 'boots':
         armor = round(lvl * 1.5) + random.randint(0, round(lvl * 1))
     else:
         armor = 0
+
+    print(GREEN + f"ARMOR: {armor}, Kategorie itemu: {category}" + RESET)
 
     if category in ['ring', 'amulet', 'talisman']:
         str_bonus = random.randint(0, round(lvl * 1.5))

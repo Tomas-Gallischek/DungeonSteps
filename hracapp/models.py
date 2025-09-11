@@ -307,7 +307,18 @@ class Character_bonus(models.Model):
     sance_na_bezvedomi_procenta_it_bonus = models.FloatField(("Procentuální šance na bezvědomí (předměty)"), default=0, blank=True, null=True)
     kriticke_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus ke kritickému poškození (předměty)"), default=0, blank=True, null=True)
 
+    armor_armor = models.IntegerField(("Hodnota brnění (předměty)"), default=0, blank=True, null=True)
+    armor_helmet = models.IntegerField(("Hodnota helmy (předměty)"), default=0, blank=True, null=True)
+    armor_boots = models.IntegerField(("Hodnota bot (předměty)"), default=0, blank=True, null=True)
+    armor_suma = models.IntegerField(("Celková hodnota brnění (předměty)"), default=0, blank=True, null=True)
+
     def save(self, *args, **kwargs):
+
+        self.armor_armor = EQP.objects.filter(hrac=self.hrac, item_category='armor').aggregate(total_armor=Sum('armor'))['total_armor'] or 0
+        self.armor_helmet = EQP.objects.filter(hrac=self.hrac, item_category='helmet').aggregate(total_armor=Sum('armor'))['total_armor'] or 0
+        self.armor_boots = EQP.objects.filter(hrac=self.hrac, item_category='boots').aggregate(total_armor=Sum('armor'))['total_armor'] or 0
+        self.armor_suma = self.armor_armor + self.armor_helmet + self.armor_boots
+
         # Seznam všech polí, které chceme sečíst
         bonus_fields = [
             'hp_flat_it_bonus', 'pvm_resist_procenta_it_bonus', 'pvp_resist_procenta_it_bonus',
