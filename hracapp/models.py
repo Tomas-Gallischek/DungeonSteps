@@ -366,6 +366,7 @@ class ShopOffer(models.Model):
     kriticke_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus ke kritickému poškození (předměty)"), default=0, blank=True, null=True)
 
     price = models.IntegerField(default=0)
+    sell_price = models.FloatField(("Prodejní cena"), default=0)
 
     min_dmg = models.IntegerField(default=0, blank=True, null=True)
     max_dmg = models.IntegerField(default=1, blank=True, null=True)
@@ -426,6 +427,7 @@ class INV(models.Model):
     kriticke_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus ke kritickému poškození (předměty)"), default=0, blank=True, null=True)
 
     price = models.IntegerField(default=0)
+    sell_price = models.FloatField(("Prodejní cena"), default=0)
 
     min_dmg = models.IntegerField(default=0, blank=True, null=True)
     max_dmg = models.IntegerField(default=1, blank=True, null=True)
@@ -486,6 +488,7 @@ class EQP(models.Model):
     kriticke_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus ke kritickému poškození (předměty)"), default=0, blank=True, null=True)
 
     price = models.IntegerField(default=0)
+    sell_price = models.FloatField(("Prodejní cena"), default=0)
 
     min_dmg = models.IntegerField(default=0, blank=True, null=True)
     max_dmg = models.IntegerField(default=1, blank=True, null=True)

@@ -105,7 +105,11 @@
         {% csrf_token %}
     <button type="submit">Nasadit</button>
     </form>
-    
+
+    <form method="POST" action="{% url 'sell_item-url' item.item_id %}">
+        {% csrf_token %}
+    <button type="submit">PRODAT ZA ({{ item.sell_price }} goldů)</button>
+    </form>
     {% endif %}
 {% endfor %}
 

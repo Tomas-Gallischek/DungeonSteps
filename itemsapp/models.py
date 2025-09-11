@@ -41,7 +41,7 @@ class Items(models.Model):
     slot_4_value = models.IntegerField(blank=True, null=True)
 
     price = models.IntegerField(default=0)
-
+    sell_price = models.FloatField(("Prodejní cena"), default=0)
     min_dmg = models.IntegerField(default=0, blank=True, null=True)
     max_dmg = models.IntegerField(default=1, blank=True, null=True)
     prum_dmg = models.FloatField(default=0, blank=True, null=True)

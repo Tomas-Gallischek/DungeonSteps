@@ -16,4 +16,5 @@ urlpatterns = [
     path('plus_xp', xp_lvl.plus_xp, name='plus_xp-url'),
     path('gold_transaction', economy.buy_or_sell_convert, name='gold_transaction-url'),
     path('atributs-update', update_atributs.atr_update, name='atributs-update-url'),
+    path('sell_item/<int:item_id>/', economy.sell_item, name='sell_item-url'),
     ]

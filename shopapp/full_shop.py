@@ -29,6 +29,7 @@ def full_shop(request):
             item_category=new_item['item_category'],
             slots=new_item['slots'],
             price=new_item['price'],
+            sell_price=new_item['sell_price'],
             min_dmg=new_item['min_dmg'],
             max_dmg=new_item['max_dmg'],
             prum_dmg=new_item['prum_dmg'],

@@ -23,11 +23,6 @@ class AtributsInline(admin.StackedInline):
     verbose_name_plural = 'Atributy'
 
 
-class CharacterBonusInline(admin.StackedInline):
-    model = Character_bonus
-    can_delete = False
-    verbose_name_plural = 'Bonusy postavy'
-
 class ShopOfferInline(admin.TabularInline):
     model = ShopOffer
     extra = 0
@@ -82,7 +77,6 @@ class PlayerinfoAdmin(UserAdmin):
         XPLVLInline,
         EconomyInline,
         AtributsInline,
-        CharacterBonusInline,
         ShopOfferInline,
         INVInline,
         EQPInline,
@@ -90,3 +84,10 @@ class PlayerinfoAdmin(UserAdmin):
         EconomyLogInline,
     ]
 
+# ==== SAMOSTATNÁ REGISTRACE MODELU CHARACTER_BONUS ====
+
+@admin.register(Character_bonus)
+class CharacterBonusAdmin(admin.ModelAdmin):
+    list_display = ('hrac', 'hp_flat_it_bonus', 'pvm_resist_procent_it_bonus')
+    search_fields = ('hrac__username',)
+    readonly_fields = [field.name for field in Character_bonus._meta.fields]

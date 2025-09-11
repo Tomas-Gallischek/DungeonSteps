@@ -211,6 +211,7 @@ def items_generator(request):
 
     price = 1 * (level_required + level_stop) * (slots + 1) * (lvl / 2) * (random.randint(1, 5)) * price_koef
     price = round(price)
+    sell_price = round(price / 2)
 
 
     if category == 'weapon':
@@ -309,6 +310,7 @@ def items_generator(request):
         'hp_flat_bonus': hp_flat_bonus,
 
         'price': price,
+        'sell_price': sell_price,
         'min_dmg': min_dmg,
         'max_dmg': max_dmg,
         'prum_dmg': prum_dmg,

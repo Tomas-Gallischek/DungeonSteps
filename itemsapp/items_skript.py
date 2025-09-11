@@ -56,6 +56,7 @@ for one_item in item_list:
         item_category = category,
 
         price = 0,
+        sell_price = 0,
 
         min_dmg = 0,
         max_dmg = 1,

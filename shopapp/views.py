@@ -55,6 +55,7 @@ def shop_buy(request, item_id):
             item_category=item_to_buy.item_category,
             slots=item_to_buy.slots,
             price=item_to_buy.price,
+            sell_price=item_to_buy.sell_price,
             min_dmg=item_to_buy.min_dmg,
             max_dmg=item_to_buy.max_dmg,
             prum_dmg=item_to_buy.prum_dmg,
