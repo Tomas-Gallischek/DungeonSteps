@@ -5,6 +5,7 @@ from urllib import request
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.db.models import Sum
 
 
 # HLAVNÍ DATABÁZE HRÁČE:
@@ -269,6 +270,8 @@ class Atributs(models.Model):
 
         return f"Atributy pro hráče {hrac_info}"
 
+
+
 class Character_bonus(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='char_bonus', blank=True)
     hp_flat_it_bonus = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
@@ -292,6 +295,42 @@ class Character_bonus(models.Model):
     sance_na_bezvedomi_procenta_it_bonus = models.FloatField(("Procentuální šance na bezvědomí (předměty)"), default=0, blank=True, null=True)
     kriticke_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus ke kritickému poškození (předměty)"), default=0, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        # Seznam všech polí, které chceme sečíst
+        bonus_fields = [
+            'hp_flat_it_bonus', 'pvm_resist_procenta_it_bonus', 'pvp_resist_procenta_it_bonus',
+            'magic_resist_procenta_it_bonus', 'heavy_resist_procenta_it_bonus', 'light_resist_procenta_it_bonus',
+            'otrava_resist_procenta_it_bonus', 'bezvedomi_resist_procenta_it_bonus', 'luck_flat_it_bonus',
+            'str_flat_it_bonus', 'dex_flat_it_bonus', 'int_flat_it_bonus', 'vit_flat_it_bonus',
+            'pvm_poskozeni_procenta_it_bonus', 'pvp_poskozeni_procenta_it_bonus',
+            'poskozeni_schopnosti_procenta_it_bonus', 'poskozeni_utokem_procenta_it_bonus',
+            'sance_na_otravu_procenta_it_bonus', 'sance_na_bezvedomi_procenta_it_bonus',
+            'kriticke_poskozeni_procenta_it_bonus'
+        ]
+
+        # Vytvoření slovníku s argumenty pro agregaci
+        aggregation_kwargs = {f'{field}__sum': Sum(field) for field in bonus_fields}
+
+        # Jeden efektivní dotaz na databázi, který sečte vše najednou
+        bonuses = EQP.objects.filter(hrac=self.hrac).aggregate(**aggregation_kwargs)
+
+        # Přiřazení sečtených hodnot k polím modelu, s ošetřením hodnot None
+        for field in bonus_fields:
+            sum_value = bonuses.get(f'{field}__sum')
+            setattr(self, field, sum_value or 0)
+
+        # Uložíme instanci modelu do databáze
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        # ... (zbytek metody je stejný)
+        if self.hrac:
+            hrac_info = self.hrac.username
+        else:
+            hrac_info = f'Žádný hráč (ID: {self.id})'
+
+        return f"Bonusy pro hráče {hrac_info}"
+    
 
 class ShopOffer(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='shop_offer', blank=True)
@@ -342,7 +381,6 @@ class ShopOffer(models.Model):
 
     def save(self, *args, **kwargs):
         self.img_init = f"{self.name}.png"
-        self.prum_dmg = (self.min_dmg + self.max_dmg) / 2
         super().save(*args, **kwargs)
 
     def __str__(self):
