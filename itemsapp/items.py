@@ -1,3 +1,4 @@
+from calendar import c
 import os
 from turtle import st
 from urllib import request
@@ -57,113 +58,149 @@ def items_generator(request):
     else:
         slots = 4
 
-    def bonus_generator():   
-        i = random.randint(1, 100)
-        if i <= 100:
-            luck_koef = 1
-        elif i <= 60:
-            luck_koef = 2
-        elif i <= 30:
-            luck_koef = 3
-        elif i <= 20:
-            luck_koef = 4
-        elif i <= 10:
-            luck_koef = 5
+    numbers = random.sample(range(1, 20 + 1), slots)
 
-        random_bonus = random.choice(all_item_bonus)
-        random_bonus_id = random_bonus.bonus_id
-        bonus_min_value = random_bonus.bonus_min_value
-        bonus_max_value = random_bonus.bonus_max_value
-        bonus_definitiv_valute = random.randint(bonus_min_value, round(bonus_max_value / 4)) * luck_koef
-        if bonus_definitiv_valute > bonus_max_value:
-            bonus_definitiv_valute = bonus_max_value
-
-        return bonus_definitiv_valute, random_bonus_id
+    crit_bonus = 0
+    if 1 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 1).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 1).bonus_max_value
+        crit_bonus = random.randint((min_value * 10), (max_value * 10))
+        crit_bonus = crit_bonus / 10
     
-    if slots > 0:
-        for one_bonus in range(1, slots + 1):
-            bonus_definitiv_valute, random_bonus_id = bonus_generator()
+    sance_na_bezvedomi = 0
+    if 2 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 2).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 2).bonus_max_value
+        sance_na_bezvedomi = random.randint((min_value * 10), (max_value * 10))
+        sance_na_bezvedomi = sance_na_bezvedomi / 10
 
-            if random_bonus_id == 1:
-                crit_bonus += bonus_definitiv_valute
-            else:
-                crit_bonus += 0
-            if random_bonus_id == 2:
-                sance_na_bezvedomi += bonus_definitiv_valute
-            else:
-                sance_na_bezvedomi += 0
-            if random_bonus_id == 3:
-                sance_na_otravu += bonus_definitiv_valute
-            else:
-                sance_na_otravu += 0
-            if random_bonus_id == 4:
-                poskozeni_utokem += bonus_definitiv_valute
-            else:
-                poskozeni_utokem += 0
-            if random_bonus_id == 5:
-                poskozeni_kouzlem += bonus_definitiv_valute
-            else:
-                poskozeni_kouzlem += 0
-            if random_bonus_id == 6:
-                pvp_poskozeni += bonus_definitiv_valute
-            else:
-                pvp_poskozeni += 0
-            if random_bonus_id == 7:
-                pvm_poskozeni += bonus_definitiv_valute
-            else:
-                pvm_poskozeni += 0
-            if random_bonus_id == 8:
-                str_flat_bonus += bonus_definitiv_valute
-            else:
-                str_flat_bonus += 0
-            if random_bonus_id == 9:
-                dex_flat_bonus += bonus_definitiv_valute
-            else:
-                dex_flat_bonus += 0
-            if random_bonus_id == 10:
-                int_flat_bonus += bonus_definitiv_valute
-            else:
-                int_flat_bonus += 0
-            if random_bonus_id == 11:
-                vit_flat_bonus += bonus_definitiv_valute
-            else:
-                vit_flat_bonus += 0 
-            if random_bonus_id == 12:
-                luk_flat_bonus += bonus_definitiv_valute
-            else:
-                luk_flat_bonus += 0
-            if random_bonus_id == 13:
-                odolnost_proti_bezvedomi += bonus_definitiv_valute
-            else:
-                odolnost_proti_bezvedomi += 0
-            if random_bonus_id == 14:
-                odolnost_proti_otrave += bonus_definitiv_valute
-            else:
-                odolnost_proti_otrave += 0
-            if random_bonus_id == 15:
-                light_weapon_resist = bonus_definitiv_valute
-            else:
-                light_weapon_resist = 0
-            if random_bonus_id == 16:
-                heavy_weapon_resist = bonus_definitiv_valute
-            else:
-                heavy_weapon_resist = 0
-            if random_bonus_id == 17:
-                magic_weapon_resist = bonus_definitiv_valute
-            else:
-                magic_weapon_resist = 0
-            if random_bonus_id == 18:
-                pvp_resist = bonus_definitiv_valute
-            else:
-                pvp_resist = 0  
-            if random_bonus_id == 19:
-                pvm_resist = bonus_definitiv_valute
-            else:
-                pvm_resist = 0
-            if random_bonus_id == 20:
-                hp_flat_bonus += bonus_definitiv_valute
-            else:
-                hp_flat_bonus += 0
+    sance_na_otravu = 0
+    if 3 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 3).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 3).bonus_max_value
+        sance_na_otravu = random.randint((min_value * 10), (max_value * 10))
+        sance_na_otravu = sance_na_otravu / 10
+
+    poskozeni_utokem = 0
+    if 4 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 4).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 4).bonus_max_value
+        poskozeni_utokem = random.randint((min_value * 10), (max_value * 10))
+        poskozeni_utokem = poskozeni_utokem / 10
+
+    poskozeni_kouzlem = 0
+    if 5 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 5).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 5).bonus_max_value
+        poskozeni_kouzlem = random.randint((min_value * 10), (max_value * 10))
+        poskozeni_kouzlem = poskozeni_kouzlem / 10
+
+
+    pvp_poskozeni = 0
+    if 6 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 6).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 6).bonus_max_value
+        pvp_poskozeni = random.randint((min_value * 10), (max_value * 10))
+        pvp_poskozeni = pvp_poskozeni / 10
+
+
+    pvm_poskozeni = 0
+    if 7 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 7).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 7).bonus_max_value
+        pvm_poskozeni = random.randint((min_value * 10), (max_value * 10))
+        pvm_poskozeni = pvm_poskozeni / 10
+
+    str_flat_bonus = 0
+    if 8 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 8).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 8).bonus_max_value
+        str_flat_bonus = random.randint(min_value, max_value)
+
+
+    dex_flat_bonus = 0
+    if 9 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 9).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 9).bonus_max_value
+        dex_flat_bonus = random.randint(min_value, max_value)
+
+
+    int_flat_bonus = 0
+    if 10 in numbers:   
+        min_value = all_item_bonus.get(bonus_id = 10).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 10).bonus_max_value
+        int_flat_bonus = random.randint(min_value, max_value)
+
+
+    vit_flat_bonus = 0
+    if 11 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 11).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 11).bonus_max_value
+        vit_flat_bonus = random.randint(min_value, max_value)
+    
+    luk_flat_bonus = 0
+    if 12 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 12).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 12).bonus_max_value
+        luk_flat_bonus = random.randint(min_value, max_value)
+
+    odolnost_proti_bezvedomi = 0
+    if 13 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 13).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 13).bonus_max_value
+        odolnost_proti_bezvedomi = random.randint((min_value * 10), (max_value * 10))
+        odolnost_proti_bezvedomi = odolnost_proti_bezvedomi / 10
+
+    odolnost_proti_otrave = 0
+    if 14 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 14).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 14).bonus_max_value
+        odolnost_proti_otrave = random.randint((min_value * 10), (max_value * 10))
+        odolnost_proti_otrave = odolnost_proti_otrave / 10
+
+    light_weapon_resist = 0
+    if 15 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 15).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 15).bonus_max_value
+        light_weapon_resist = random.randint((min_value * 10), (max_value * 10))
+        light_weapon_resist = light_weapon_resist / 10
+    
+    heavy_weapon_resist = 0
+    if 16 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 16).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 16).bonus_max_value
+        heavy_weapon_resist = random.randint((min_value * 10), (max_value * 10))
+        heavy_weapon_resist = heavy_weapon_resist / 10
+
+    magic_weapon_resist = 0
+    if 17 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 17).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 17).bonus_max_value
+        magic_weapon_resist = random.randint((min_value * 10), (max_value * 10))
+        magic_weapon_resist = magic_weapon_resist / 10
+
+    
+    pvp_resist = 0
+    if 18 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 18).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 18).bonus_max_value
+        pvp_resist = random.randint((min_value * 10), (max_value * 10))
+        pvp_resist = pvp_resist / 10
+
+    pvm_resist = 0
+    if 19 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 19).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 19).bonus_max_value
+        pvm_resist = random.randint((min_value * 10), (max_value * 10))
+        pvm_resist = pvm_resist / 10
+
+    hp_flat_bonus = 0
+    if 20 in numbers:
+        min_value = all_item_bonus.get(bonus_id = 20).bonus_min_value
+        max_value = all_item_bonus.get(bonus_id = 20).bonus_max_value
+        hp_flat_bonus = random.randint(min_value, max_value)
+
+
 # ABY RŮZNÉ KATEGORIE MĚLY RŮZNOU CENU
     if category == 'weapon':
         price_koef = 2
@@ -183,7 +220,7 @@ def items_generator(request):
         max_dmg = round(lvl * 3) * max_dmg_koeficient
         if min_dmg > max_dmg:
             min_dmg, max_dmg = max_dmg, min_dmg
-        prum_dmg = (min_dmg + max_dmg) / 2
+        prum_dmg = round((min_dmg + max_dmg) / 2)
     else:
         min_dmg = 0
         max_dmg = 0
@@ -233,11 +270,11 @@ def items_generator(request):
                 luk_bonus = random.randint(lvl, round(lvl * 1.5))
 
     else:
-        str_bonus = None
-        dex_bonus = None
-        int_bonus = None
-        vit_bonus = None
-        luk_bonus = None
+        str_bonus = 0
+        dex_bonus = 0
+        int_bonus = 0
+        vit_bonus = 0
+        luk_bonus = 0
 
     new_item = {
         'name': name,
@@ -249,6 +286,28 @@ def items_generator(request):
         'item_type': type,
         'item_category': category,
         'slots': slots,
+
+        'crit_bonus': crit_bonus,
+        'sance_na_bezvedomi': sance_na_bezvedomi,
+        'sance_na_otravu': sance_na_otravu,
+        'poskozeni_utokem': poskozeni_utokem,
+        'poskozeni_kouzlem': poskozeni_kouzlem,
+        'pvp_poskozeni': pvp_poskozeni,
+        'pvm_poskozeni': pvm_poskozeni,
+        'str_flat_bonus': str_flat_bonus,
+        'dex_flat_bonus': dex_flat_bonus,
+        'int_flat_bonus': int_flat_bonus,
+        'vit_flat_bonus': vit_flat_bonus,
+        'luk_flat_bonus': luk_flat_bonus,
+        'odolnost_proti_bezvedomi': odolnost_proti_bezvedomi,
+        'odolnost_proti_otrave': odolnost_proti_otrave,
+        'light_weapon_resist': light_weapon_resist,
+        'heavy_weapon_resist': heavy_weapon_resist,
+        'magic_weapon_resist': magic_weapon_resist,
+        'pvp_resist': pvp_resist,
+        'pvm_resist': pvm_resist,
+        'hp_flat_bonus': hp_flat_bonus,
+
         'price': price,
         'min_dmg': min_dmg,
         'max_dmg': max_dmg,

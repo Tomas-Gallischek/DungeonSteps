@@ -10,6 +10,7 @@ from django.utils import timezone
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):
     ITEM_TYPE_CHOICES = (
+        ('universal', 'Univerzální'),
         ('heavy', 'Těžké'),
         ('light', 'Lehké'),
         ('magic', 'Magické'),
@@ -292,8 +293,6 @@ class Character_bonus(models.Model):
     kriticke_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus ke kritickému poškození (předměty)"), default=0, blank=True, null=True)
 
 
-
-
 class ShopOffer(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='shop_offer', blank=True)
     name = models.CharField(max_length=100, blank=True, null=True)
@@ -304,9 +303,10 @@ class ShopOffer(models.Model):
     level_stop = models.IntegerField(default=10, blank=True, null=True)
     item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
     item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, blank=True, null=True, default="")
+    slots = models.IntegerField(default=0, blank=True, null=True)
 
     hp_flat_it_bonus = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
-    pvm_resist_procent_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
+    pvm_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVP (předměty)"), default=0, blank=True, null=True)
     magic_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti magii (předměty)"), default=0, blank=True, null=True)
     heavy_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti těžkým zbraním (předměty)"), default=0, blank=True, null=True)
@@ -364,9 +364,10 @@ class INV(models.Model):
     level_stop = models.IntegerField(default=10, blank=True, null=True)
     item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
     item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, blank=True, null=True, default="")
+    slots = models.IntegerField(default=0, blank=True, null=True)
 
     hp_flat_it_bonus = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
-    pvm_resist_procent_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
+    pvm_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVP (předměty)"), default=0, blank=True, null=True)
     magic_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti magii (předměty)"), default=0, blank=True, null=True)
     heavy_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti těžkým zbraním (předměty)"), default=0, blank=True, null=True)
@@ -423,9 +424,10 @@ class EQP(models.Model):
     level_stop = models.IntegerField(default=10, blank=True, null=True)
     item_type = models.CharField(max_length=20, choices=Playerinfo.ITEM_TYPE_CHOICES, blank=True, null=True)
     item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, blank=True, null=True, default="")
+    slots = models.IntegerField(default=0, blank=True, null=True)
 
     hp_flat_it_bonus = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
-    pvm_resist_procent_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
+    pvm_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVP (předměty)"), default=0, blank=True, null=True)
     magic_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti magii (předměty)"), default=0, blank=True, null=True)
     heavy_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti těžkým zbraním (předměty)"), default=0, blank=True, null=True)

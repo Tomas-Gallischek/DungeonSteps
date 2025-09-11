@@ -4,11 +4,15 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .off_deff import off_stats, def_stats
-from . models import EQP, INV, XP_LVL, Economy, Atributs
+from . models import EQP, INV, XP_LVL, Economy, Atributs, ShopOffer
 
 
 @login_required
 def profile(request):
+
+    #INV.objects.all().delete()
+    #EQP.objects.all().delete()
+    #ShopOffer.objects.all().delete()
 
     inventory_items = inventory(request)
     equipment_items = equipment(request)
@@ -93,34 +97,46 @@ def equip_item(request, item_id):
     item = inventary.get(item_id=item_id)
 
     EQP.objects.create(
-        hrac=item.hrac,
-        item_id=item.item_id,
-        name=item.name,
-        img_init=item.img_init,
-        description=item.description,
-        level_required=item.level_required,
-        level_stop=item.level_stop,
-        item_type=item.item_type,
-        item_category=item.item_category,
-        slots=item.slots,
-        slot_1_bonus=item.slot_1_bonus,
-        slot_1_value=item.slot_1_value,
-        slot_2_bonus=item.slot_2_bonus,
-        slot_2_value=item.slot_2_value,
-        slot_3_bonus=item.slot_3_bonus,
-        slot_3_value=item.slot_3_value,
-        slot_4_bonus=item.slot_4_bonus,
-        slot_4_value=item.slot_4_value,
-        price=item.price,
-        min_dmg=item.min_dmg,
-        max_dmg=item.max_dmg,
-        prum_dmg=item.prum_dmg,
-        armor=item.armor,
-        str_bonus=item.str_bonus,
-        dex_bonus=item.dex_bonus,
-        int_bonus=item.int_bonus,
-        vit_bonus=item.vit_bonus,
-        luk_bonus=item.luk_bonus,
+            hrac=user,
+            item_id=item.item_id,
+            name=item.name,
+            img_init=item.img_init,
+            description=item.description,
+            level_required=item.level_required,
+            level_stop=item.level_stop,
+            item_type=item.item_type,
+            item_category=item.item_category,
+            slots=item.slots,
+            price=item.price,
+            min_dmg=item.min_dmg,
+            max_dmg=item.max_dmg,
+            prum_dmg=item.prum_dmg,
+            armor=item.armor,
+            str_bonus=item.str_bonus,
+            dex_bonus=item.dex_bonus,
+            int_bonus=item.int_bonus,
+            vit_bonus=item.vit_bonus,
+            luk_bonus=item.luk_bonus,
+            kriticke_poskozeni_procenta_it_bonus=item.kriticke_poskozeni_procenta_it_bonus,
+            sance_na_bezvedomi_procenta_it_bonus=item.sance_na_bezvedomi_procenta_it_bonus,
+            sance_na_otravu_procenta_it_bonus=item.sance_na_otravu_procenta_it_bonus,
+            poskozeni_utokem_procenta_it_bonus=item.poskozeni_utokem_procenta_it_bonus,
+            poskozeni_schopnosti_procenta_it_bonus=item.poskozeni_schopnosti_procenta_it_bonus,
+            pvp_poskozeni_procenta_it_bonus=item.pvp_poskozeni_procenta_it_bonus,
+            pvm_poskozeni_procenta_it_bonus=item.pvm_poskozeni_procenta_it_bonus,
+            str_flat_it_bonus=item.str_flat_it_bonus,
+            dex_flat_it_bonus=item.dex_flat_it_bonus,
+            int_flat_it_bonus=item.int_flat_it_bonus,
+            vit_flat_it_bonus=item.vit_flat_it_bonus,
+            luck_flat_it_bonus=item.luck_flat_it_bonus,
+            bezvedomi_resist_procenta_it_bonus=item.bezvedomi_resist_procenta_it_bonus,
+            otrava_resist_procenta_it_bonus=item.otrava_resist_procenta_it_bonus,
+            light_resist_procenta_it_bonus=item.light_resist_procenta_it_bonus,
+            heavy_resist_procenta_it_bonus=item.heavy_resist_procenta_it_bonus,
+            magic_resist_procenta_it_bonus=item.magic_resist_procenta_it_bonus,
+            pvp_resist_procenta_it_bonus=item.pvp_resist_procenta_it_bonus,
+            pvm_resist_procenta_it_bonus=item.pvm_resist_procenta_it_bonus,
+            hp_flat_it_bonus=item.hp_flat_it_bonus
     )
 
     INV.objects.filter(hrac=user, item_id=item_id).delete()
@@ -135,34 +151,46 @@ def dequip_item(request, item_id):
     item = equipment.get(item_id=item_id)
 
     INV.objects.create(
-        hrac=user,
-        item_id=item.item_id,
-        name=item.name,
-        img_init=item.img_init,
-        description=item.description,
-        level_required=item.level_required,
-        level_stop=item.level_stop,
-        item_type=item.item_type,
-        item_category=item.item_category,
-        slots=item.slots,
-        slot_1_bonus=item.slot_1_bonus,
-        slot_1_value=item.slot_1_value,
-        slot_2_bonus=item.slot_2_bonus,
-        slot_2_value=item.slot_2_value,
-        slot_3_bonus=item.slot_3_bonus,
-        slot_3_value=item.slot_3_value,
-        slot_4_bonus=item.slot_4_bonus,
-        slot_4_value=item.slot_4_value,
-        price=item.price,
-        min_dmg=item.min_dmg,
-        max_dmg=item.max_dmg,
-        prum_dmg=item.prum_dmg,
-        armor=item.armor,
-        str_bonus=item.str_bonus,
-        dex_bonus=item.dex_bonus,
-        int_bonus=item.int_bonus,
-        vit_bonus=item.vit_bonus,
-        luk_bonus=item.luk_bonus,
+            hrac=user,
+            item_id=item.item_id,
+            name=item.name,
+            img_init=item.img_init,
+            description=item.description,
+            level_required=item.level_required,
+            level_stop=item.level_stop,
+            item_type=item.item_type,
+            item_category=item.item_category,
+            slots=item.slots,
+            price=item.price,
+            min_dmg=item.min_dmg,
+            max_dmg=item.max_dmg,
+            prum_dmg=item.prum_dmg,
+            armor=item.armor,
+            str_bonus=item.str_bonus,
+            dex_bonus=item.dex_bonus,
+            int_bonus=item.int_bonus,
+            vit_bonus=item.vit_bonus,
+            luk_bonus=item.luk_bonus,
+            kriticke_poskozeni_procenta_it_bonus=item.kriticke_poskozeni_procenta_it_bonus,
+            sance_na_bezvedomi_procenta_it_bonus=item.sance_na_bezvedomi_procenta_it_bonus,
+            sance_na_otravu_procenta_it_bonus=item.sance_na_otravu_procenta_it_bonus,
+            poskozeni_utokem_procenta_it_bonus=item.poskozeni_utokem_procenta_it_bonus,
+            poskozeni_schopnosti_procenta_it_bonus=item.poskozeni_schopnosti_procenta_it_bonus,
+            pvp_poskozeni_procenta_it_bonus=item.pvp_poskozeni_procenta_it_bonus,
+            pvm_poskozeni_procenta_it_bonus=item.pvm_poskozeni_procenta_it_bonus,
+            str_flat_it_bonus=item.str_flat_it_bonus,
+            dex_flat_it_bonus=item.dex_flat_it_bonus,
+            int_flat_it_bonus=item.int_flat_it_bonus,
+            vit_flat_it_bonus=item.vit_flat_it_bonus,
+            luck_flat_it_bonus=item.luck_flat_it_bonus,
+            bezvedomi_resist_procenta_it_bonus=item.bezvedomi_resist_procenta_it_bonus,
+            otrava_resist_procenta_it_bonus=item.otrava_resist_procenta_it_bonus,
+            light_resist_procenta_it_bonus=item.light_resist_procenta_it_bonus,
+            heavy_resist_procenta_it_bonus=item.heavy_resist_procenta_it_bonus,
+            magic_resist_procenta_it_bonus=item.magic_resist_procenta_it_bonus,
+            pvp_resist_procenta_it_bonus=item.pvp_resist_procenta_it_bonus,
+            pvm_resist_procenta_it_bonus=item.pvm_resist_procenta_it_bonus,
+            hp_flat_it_bonus=item.hp_flat_it_bonus
     )
 
     EQP.objects.filter(hrac=user, item_id=item_id).delete()
