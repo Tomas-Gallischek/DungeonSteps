@@ -1,12 +1,7 @@
-from email.mime import base
-from pyexpat import model
-from turtle import mode
-from urllib import request
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Sum
-
 
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):
@@ -50,7 +45,6 @@ class Playerinfo(AbstractUser):
         ('strength', 'Síla'),
         ('dexterity', 'Obratnost'),
         ('intelligence', 'Inteligence'),
-        ('charisma', 'Charisma'),
         ('luck', 'Štěstí'),
         ('vitality', 'Vitalita')
     )
@@ -188,7 +182,7 @@ class Atributs(models.Model):
 
 # BASE = Rasa + povolání
 # PLUS = Zvyšování klikáním
-# ITEMS = Bonusy z předmětů (ty sčítat zvlášť v eqp a pak je posílat sem)
+# ITEMS = Bonusy z předmětů
 # CENA = Výpočet ceny na úrovni databáze zatím pomocí ** 1.5
 
 
@@ -196,6 +190,7 @@ class Atributs(models.Model):
     hp_base = models.FloatField(("Bonus k životům"), default=100, blank=True, null=True)
     hp_rasa = models.FloatField(("Životy z rasy"), default=0, blank=True, null=True)
     hp_vit = models.FloatField(("plus k životům"), default=0, blank=True, null=True)
+    hp_items = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
     hp_koeficient = models.FloatField(("Koeficient k životům"), default=1.0, blank=True, null=True)
     hp_bonus_procenta = models.FloatField(("Bonus k životům (%)"), default=0, blank=True, null=True)
 
@@ -214,41 +209,43 @@ class Atributs(models.Model):
     intelligence_plus = models.IntegerField(("plus k inteligenci"), default=0, blank=True, null=True)
     intelligence_items = models.IntegerField(("Bonus k inteligenci (předměty)"), default=0, blank=True, null=True)
 
-    suma_charisma = models.IntegerField(("Charisma"), default=1, blank=True, null=True)
-    charisma_base = models.IntegerField(("Základní charisma"), default=1, blank=True, null=True)
-    charisma_plus = models.IntegerField(("plus k charismatu"), default=0, blank=True, null=True)
-    charisma_items = models.IntegerField(("Bonus k charismatu (předměty)"), default=0, blank=True, null=True)
-
     suma_vitality = models.IntegerField(("Vitalita"), default=1, blank=True, null=True)
     vitality_base = models.IntegerField(("Základní vitalita"), default=1, blank=True, null=True)
     vitality_plus = models.IntegerField(("plus k vitalitě"), default=0, blank=True, null=True)
     vitality_items = models.IntegerField(("Bonus k vitalitě (předměty)"), default=0, blank=True, null=True)
 
     suma_luck = models.IntegerField(("Zručnost"), default=1, blank=True, null=True)
-    luck_base = models.IntegerField(("Základní zručnost"), default=1, blank=True, null=True)
-    luck_plus = models.IntegerField(("plus k zručnosti"), default=0, blank=True, null=True)
-    luck_items = models.IntegerField(("Bonus k zručnosti (předměty)"), default=0, blank=True, null=True)
+    luck_base = models.IntegerField(("Základní štěstí"), default=1, blank=True, null=True)
+    luck_plus = models.IntegerField(("plus k štěstí"), default=0, blank=True, null=True)
+    luck_items = models.IntegerField(("Bonus k štěstí (předměty)"), default=0, blank=True, null=True)
 
     dmg_atribut = models.CharField(max_length=20, choices=Playerinfo.ATRIBUTS_CHOICES, blank=True, null=True)
 
     strength_cena = models.IntegerField(("Cena za zvýšení síly"), default=1, blank=True, null=True)
     dexterity_cena = models.IntegerField(("Cena za zvýšení obratnosti"), default=1, blank=True, null=True)
     intelligence_cena = models.IntegerField(("Cena za zvýšení inteligence"), default=1, blank=True, null=True)
-    charisma_cena = models.IntegerField(("Cena za zvýšení charismatu"), default=1, blank=True, null=True)
     vitality_cena = models.IntegerField(("Cena za zvýšení vitality"), default=1, blank=True, null=True)
-    luck_cena = models.IntegerField(("Cena za zvýšení zručnosti"), default=1, blank=True, null=True)
+    luck_cena = models.IntegerField(("Cena za zvýšení štěstí"), default=1, blank=True, null=True)
 
     def save(self, *args, **kwargs):
     # HP
         self.hp_base = 99 + (XP_LVL.objects.get(hrac=self.hrac).lvl ** 2)
         self.hp_vit = (self.suma_vitality) * (self.suma_vitality / 10)
-        self.suma_hp = ((self.hp_base) + (self.hp_vit) + (self.hp_rasa)) * (self.hp_koeficient)
+        self.hp_items = Character_bonus.objects.get(hrac=self.hrac).hp_flat_it_bonus
+        self.suma_hp = ((self.hp_base) + (self.hp_vit) + (self.hp_rasa) + (self.hp_items)) * (self.hp_koeficient)
         self.hp_bonus_procenta = (self.hp_vit) / (self.suma_hp / 100)
+
+    # ATRIBUTY Z VYBAVENÍ
+        self.strength_items = Character_bonus.objects.get(hrac=self.hrac).str_flat_it_bonus + Character_bonus.objects.get(hrac=self.hrac).str_bonus
+        self.dexterity_items = Character_bonus.objects.get(hrac=self.hrac).dex_flat_it_bonus + Character_bonus.objects.get(hrac=self.hrac).dex_bonus
+        self.intelligence_items = Character_bonus.objects.get(hrac=self.hrac).int_flat_it_bonus + Character_bonus.objects.get(hrac=self.hrac).int_bonus
+        self.vitality_items = Character_bonus.objects.get(hrac=self.hrac).vit_flat_it_bonus + Character_bonus.objects.get(hrac=self.hrac).vit_bonus
+        self.luck_items = Character_bonus.objects.get(hrac=self.hrac).luck_flat_it_bonus + Character_bonus.objects.get(hrac=self.hrac).luk_bonus
+
     # OSTATNÍ ATRIBUTY
         self.suma_strength = self.strength_base + self.strength_plus + self.strength_items
         self.suma_dexterity = self.dexterity_base + self.dexterity_plus + self.dexterity_items
         self.suma_intelligence = self.intelligence_base + self.intelligence_plus + self.intelligence_items
-        self.suma_charisma = self.charisma_base + self.charisma_plus + self.charisma_items
         self.suma_vitality = self.vitality_base + self.vitality_plus + self.vitality_items
         self.suma_luck = self.luck_base + self.luck_plus + self.luck_items
 
@@ -256,7 +253,6 @@ class Atributs(models.Model):
         self.strength_cena = self.strength_plus ** 1.5
         self.dexterity_cena = self.dexterity_plus ** 1.5
         self.intelligence_cena = self.intelligence_plus ** 1.5
-        self.charisma_cena = self.charisma_plus ** 1.5
         self.vitality_cena = self.vitality_plus ** 1.5
         self.luck_cena = self.luck_plus ** 1.5
         super().save(*args, **kwargs)
@@ -272,8 +268,22 @@ class Atributs(models.Model):
 
 
 
+
+# Pamatuj, že třída Playerinfo musí být definovaná,
+# aby ForeignKey správně fungoval.
+# from .models import Playerinfo # Uprav, pokud je v jiném souboru
+
 class Character_bonus(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='char_bonus', blank=True)
+    
+    # NOVÉ SLUPCE, KTERÉ JSI CHTĚL PŘIDAT
+    str_bonus = models.IntegerField(default=0, blank=True, null=True, verbose_name="Bonus k síle")
+    dex_bonus = models.IntegerField(default=0, blank=True, null=True, verbose_name="Bonus k obratnosti")
+    int_bonus = models.IntegerField(default=0, blank=True, null=True, verbose_name="Bonus k inteligenci")
+    vit_bonus = models.IntegerField(default=0, blank=True, null=True, verbose_name="Bonus k vitalitě")
+    luk_bonus = models.IntegerField(default=0, blank=True, null=True, verbose_name="Bonus ke zručnosti")
+    
+    # STÁVAJÍCÍ SLUPCE
     hp_flat_it_bonus = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
     pvm_resist_procent_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVP (předměty)"), default=0, blank=True, null=True)
@@ -282,11 +292,13 @@ class Character_bonus(models.Model):
     light_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti lehkým zbraním (předměty)"), default=0, blank=True, null=True)
     otrava_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti otravě (předměty)"), default=0, blank=True, null=True)
     bezvedomi_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti bezvědomí (předměty)"), default=0, blank=True, null=True)
+
     luck_flat_it_bonus = models.FloatField(("Bonus ke zručnosti (předměty)"), default=0, blank=True, null=True)
     str_flat_it_bonus = models.FloatField(("Bonus k síle (předměty)"), default=0, blank=True, null=True)
     dex_flat_it_bonus = models.FloatField(("Bonus k obratnosti (předměty)"), default=0, blank=True, null=True)
     int_flat_it_bonus = models.FloatField(("Bonus k inteligenci (předměty)"), default=0, blank=True, null=True)
     vit_flat_it_bonus = models.FloatField(("Bonus k vitalitě (předměty)"), default=0, blank=True, null=True)
+    
     pvm_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus k poškození proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus k poškození proti PVP (předměty)"), default=0, blank=True, null=True)
     poskozeni_schopnosti_procenta_it_bonus = models.FloatField(("Procentuální bonus k poškození ze schopností (předměty)"), default=0, blank=True, null=True)
@@ -305,7 +317,10 @@ class Character_bonus(models.Model):
             'pvm_poskozeni_procenta_it_bonus', 'pvp_poskozeni_procenta_it_bonus',
             'poskozeni_schopnosti_procenta_it_bonus', 'poskozeni_utokem_procenta_it_bonus',
             'sance_na_otravu_procenta_it_bonus', 'sance_na_bezvedomi_procenta_it_bonus',
-            'kriticke_poskozeni_procenta_it_bonus'
+            'kriticke_poskozeni_procenta_it_bonus',
+            
+            # NOVÉ NÁZVY POLÍ, KTERÉ PŘIDÁVÁME
+            'str_bonus', 'dex_bonus', 'int_bonus', 'vit_bonus', 'luk_bonus'
         ]
 
         # Vytvoření slovníku s argumenty pro agregaci
@@ -405,6 +420,21 @@ class INV(models.Model):
     item_category = models.CharField(max_length=20, choices=Playerinfo.ITEM_CATEGORY_CHOICES, blank=True, null=True, default="")
     slots = models.IntegerField(default=0, blank=True, null=True)
 
+    price = models.IntegerField(default=0)
+    sell_price = models.FloatField(("Prodejní cena"), default=0)
+
+    luck_flat_it_bonus = models.FloatField(("Bonus ke zručnosti (předměty)"), default=0, blank=True, null=True)
+    str_flat_it_bonus = models.FloatField(("Bonus k síle (předměty)"), default=0, blank=True, null=True)
+    dex_flat_it_bonus = models.FloatField(("Bonus k obratnosti (předměty)"), default=0, blank=True, null=True)
+    int_flat_it_bonus = models.FloatField(("Bonus k inteligenci (předměty)"), default=0, blank=True, null=True)
+    vit_flat_it_bonus = models.FloatField(("Bonus k vitalitě (předměty)"), default=0, blank=True, null=True)
+    str_bonus = models.IntegerField(default=0, blank=True, null=True)
+    dex_bonus = models.IntegerField(default=0, blank=True, null=True)
+    int_bonus = models.IntegerField(default=0, blank=True, null=True)
+    vit_bonus = models.IntegerField(default=0, blank=True, null=True)
+    luk_bonus = models.IntegerField(default=0, blank=True, null=True)
+
+
     hp_flat_it_bonus = models.FloatField(("Bonus k životům (předměty)"), default=0, blank=True, null=True)
     pvm_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti PVP (předměty)"), default=0, blank=True, null=True)
@@ -413,11 +443,6 @@ class INV(models.Model):
     light_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti lehkým zbraním (předměty)"), default=0, blank=True, null=True)
     otrava_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti otravě (předměty)"), default=0, blank=True, null=True)
     bezvedomi_resist_procenta_it_bonus = models.FloatField(("Procentuální odolnost proti bezvědomí (předměty)"), default=0, blank=True, null=True)
-    luck_flat_it_bonus = models.FloatField(("Bonus ke zručnosti (předměty)"), default=0, blank=True, null=True)
-    str_flat_it_bonus = models.FloatField(("Bonus k síle (předměty)"), default=0, blank=True, null=True)
-    dex_flat_it_bonus = models.FloatField(("Bonus k obratnosti (předměty)"), default=0, blank=True, null=True)
-    int_flat_it_bonus = models.FloatField(("Bonus k inteligenci (předměty)"), default=0, blank=True, null=True)
-    vit_flat_it_bonus = models.FloatField(("Bonus k vitalitě (předměty)"), default=0, blank=True, null=True)
     pvm_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus k poškození proti PVM (předměty)"), default=0, blank=True, null=True)
     pvp_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus k poškození proti PVP (předměty)"), default=0, blank=True, null=True)
     poskozeni_schopnosti_procenta_it_bonus = models.FloatField(("Procentuální bonus k poškození ze schopností (předměty)"), default=0, blank=True, null=True)
@@ -426,8 +451,6 @@ class INV(models.Model):
     sance_na_bezvedomi_procenta_it_bonus = models.FloatField(("Procentuální šance na bezvědomí (předměty)"), default=0, blank=True, null=True)
     kriticke_poskozeni_procenta_it_bonus = models.FloatField(("Procentuální bonus ke kritickému poškození (předměty)"), default=0, blank=True, null=True)
 
-    price = models.IntegerField(default=0)
-    sell_price = models.FloatField(("Prodejní cena"), default=0)
 
     min_dmg = models.IntegerField(default=0, blank=True, null=True)
     max_dmg = models.IntegerField(default=1, blank=True, null=True)
@@ -435,24 +458,25 @@ class INV(models.Model):
 
     armor = models.IntegerField(default=0, blank=True, null=True)
 
-    str_bonus = models.IntegerField(default=0, blank=True, null=True)
-    dex_bonus = models.IntegerField(default=0, blank=True, null=True)
-    int_bonus = models.IntegerField(default=0, blank=True, null=True)
-    vit_bonus = models.IntegerField(default=0, blank=True, null=True)
-    luk_bonus = models.IntegerField(default=0, blank=True, null=True)
+
 
     def save(self, *args, **kwargs):
-        self.img_init = f"{self.name}.png"
-        self.prum_dmg = (self.min_dmg + self.max_dmg) / 2
+        # Nejprve ulož samotný předmět
         super().save(*args, **kwargs)
 
-    def __str__(self):
+        # --- přepočítání Character_bonus ---
+        from .models import Character_bonus, Atributs  # import uvnitř kvůli cyklickým závislostem
 
         if self.hrac:
-            hrac_info = self.hrac.username
-        else:
-            hrac_info = f'Žádný hráč (ID: {self.id})'
-        return f"INV(hrac={hrac_info}, name={self.name})"
+            char_bonus, created = Character_bonus.objects.get_or_create(hrac=self.hrac)
+            char_bonus.save()  # přepočítá bonusy z EQP + INV
+
+            # --- přepočítání Atributs ---
+            atributy, created = Atributs.objects.get_or_create(hrac=self.hrac)
+            atributy.save()
+
+    def __str__(self):
+        return f"{self.name} ({self.hrac})"
 
 class EQP(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='eqp', blank=True, null=True)
@@ -503,14 +527,17 @@ class EQP(models.Model):
     luk_bonus = models.IntegerField(default=0, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.img_init = f"{self.name}.png"
-        self.prum_dmg = (self.min_dmg + self.max_dmg) / 2
+        # Nejprve ulož samotný předmět
         super().save(*args, **kwargs)
 
-    def __str__(self):
 
         if self.hrac:
-            hrac_info = self.hrac.username
-        else:
-            hrac_info = f'Žádný hráč (ID: {self.id})'
-        return f"EQP(hrac={hrac_info}, name={self.name})"
+            char_bonus, created = Character_bonus.objects.get_or_create(hrac=self.hrac)
+            char_bonus.save()  # tím se přepočítají bonusy podle všech EQP
+
+            # --- přepočítání Atributs ---
+            atributy, created = Atributs.objects.get_or_create(hrac=self.hrac)
+            atributy.save()
+
+    def __str__(self):
+        return f"{self.name} ({self.hrac})"

@@ -200,6 +200,8 @@ def items_generator(request):
         max_value = all_item_bonus.get(bonus_id = 20).bonus_max_value
         hp_flat_bonus = random.randint(min_value, max_value)
 
+    print(f"Náhodné čísla: {numbers} - Počet slotů: {slots}")
+
 
 # ABY RŮZNÉ KATEGORIE MĚLY RŮZNOU CENU
     if category == 'weapon':
@@ -295,11 +297,13 @@ def items_generator(request):
         'poskozeni_kouzlem': poskozeni_kouzlem,
         'pvp_poskozeni': pvp_poskozeni,
         'pvm_poskozeni': pvm_poskozeni,
+
         'str_flat_bonus': str_flat_bonus,
         'dex_flat_bonus': dex_flat_bonus,
         'int_flat_bonus': int_flat_bonus,
         'vit_flat_bonus': vit_flat_bonus,
         'luk_flat_bonus': luk_flat_bonus,
+
         'odolnost_proti_bezvedomi': odolnost_proti_bezvedomi,
         'odolnost_proti_otrave': odolnost_proti_otrave,
         'light_weapon_resist': light_weapon_resist,
@@ -315,6 +319,7 @@ def items_generator(request):
         'max_dmg': max_dmg,
         'prum_dmg': prum_dmg,
         'armor': armor,
+        
         'str_bonus': str_bonus,
         'dex_bonus': dex_bonus,
         'int_bonus': int_bonus,

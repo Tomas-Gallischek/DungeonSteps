@@ -71,14 +71,6 @@ Počet XP: <input type="number" name="new_xp" min="1" value="1">
 </form>
 <p>Cena: <span id="intelligence-price">{{ intelligence_cost }}</span></p>
 
-<p>Charisma: <span id="charisma-value">{{ suma_charisma }}</span></p>
-<form action="{% url 'atributs-update-url' %}" method="POST">
-{% csrf_token %}
-<input type="hidden" name="attribute" value="charisma">
-<button type="submit">+</button>
-</form>
-<p>Cena: <span id="charisma-price">{{ charisma_cost }}</span></p>
-
 <p>Vitality: <span id="vitality-value">{{ suma_vitality }}</span></p>
 <form action="{% url 'atributs-update-url' %}" method="POST">
 {% csrf_token %}

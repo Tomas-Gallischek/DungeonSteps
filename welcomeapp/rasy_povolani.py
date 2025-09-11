@@ -20,41 +20,37 @@ def rasa_povolani_bonus_create(request):
     if rasa == 'Člověk' or rasa == 'human':
         hp_rasa = 50 * koeficient_statu
         hp_koeficient = 1.6
-        strength_base = 4 * koeficient_statu
-        vitality_base = 3 * koeficient_statu
-        dexterity_base = 4 * koeficient_statu
-        intelligence_base = 3 * koeficient_statu
-        charisma_base = 5 * koeficient_statu
-        luck_base = 5 * koeficient_statu
+        strength_base = 5 * koeficient_statu
+        vitality_base = 4 * koeficient_statu
+        dexterity_base = 5 * koeficient_statu
+        intelligence_base = 4 * koeficient_statu
+        luck_base = 7 * koeficient_statu
 
     elif rasa == 'Elf' or rasa == 'elf':
         hp_rasa = 30 * koeficient_statu
         hp_koeficient = 1.2
         strength_base = 3 * koeficient_statu
         vitality_base = 2 * koeficient_statu
-        dexterity_base = 5 * koeficient_statu
-        intelligence_base = 6 * koeficient_statu
-        charisma_base = 4 * koeficient_statu
+        dexterity_base = 7 * koeficient_statu
+        intelligence_base = 8 * koeficient_statu
         luck_base = 5 * koeficient_statu
 
     elif rasa == 'Trpaslík' or rasa == 'dwarf':
         hp_rasa = 70 * koeficient_statu
         hp_koeficient = 1.8
-        strength_base = 4 * koeficient_statu
-        vitality_base = 6 * koeficient_statu
+        strength_base = 6 * koeficient_statu
+        vitality_base = 8 * koeficient_statu
         dexterity_base = 3 * koeficient_statu
         intelligence_base = 3 * koeficient_statu
-        charisma_base = 3 * koeficient_statu
         luck_base = 5 * koeficient_statu
 
     elif rasa == 'ork' or rasa == 'ork':
         hp_rasa = 80 * koeficient_statu
         hp_koeficient = 2.0
-        strength_base = 5 * koeficient_statu
-        vitality_base = 8 * koeficient_statu
+        strength_base = 6 * koeficient_statu
+        vitality_base = 10 * koeficient_statu
         dexterity_base = 2 * koeficient_statu
         intelligence_base = 2 * koeficient_statu
-        charisma_base = 2 * koeficient_statu
         luck_base = 5 * koeficient_statu
 
     elif rasa == 'Gnóm' or rasa == 'gnome':
@@ -62,19 +58,17 @@ def rasa_povolani_bonus_create(request):
         hp_koeficient = 1.4
         strength_base = 4 * koeficient_statu
         vitality_base = 4 * koeficient_statu
-        dexterity_base = 4 * koeficient_statu
-        intelligence_base = 5 * koeficient_statu
-        charisma_base = 2 * koeficient_statu
-        luck_base = 5 * koeficient_statu
+        dexterity_base = 5 * koeficient_statu
+        intelligence_base = 6 * koeficient_statu
+        luck_base = 6 * koeficient_statu
 
     elif rasa == 'Stín' or rasa == 'shadow':
         hp_rasa = 20 * koeficient_statu
         hp_koeficient = 1.0
         strength_base = 3 * koeficient_statu
         vitality_base = 2 * koeficient_statu
-        dexterity_base = 9 * koeficient_statu
+        dexterity_base = 12 * koeficient_statu
         intelligence_base = 3 * koeficient_statu
-        charisma_base = 2 * koeficient_statu
         luck_base = 5 * koeficient_statu
 
     else:
@@ -100,7 +94,6 @@ def rasa_povolani_bonus_create(request):
     atributs_instance.vitality_base = vitality_base
     atributs_instance.dexterity_base = dexterity_base
     atributs_instance.intelligence_base = intelligence_base
-    atributs_instance.charisma_base = charisma_base
     atributs_instance.luck_base = luck_base
     atributs_instance.dmg_atribut = dmg_atribut
     Playerinfo.objects.filter(username=user.username).update(item_type=item_type)

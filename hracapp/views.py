@@ -84,7 +84,6 @@ def profile(request):
         'base_strength': atributs_data.strength_base,
         'base_dexterity': atributs_data.dexterity_base,
         'base_intelligence': atributs_data.intelligence_base,
-        'base_charisma': atributs_data.charisma_base,
         'base_vitality': atributs_data.vitality_base,
         'base_luck': atributs_data.luck_base,
         # ATRIBUTY - PLUS
@@ -92,7 +91,6 @@ def profile(request):
         'plus_strength': atributs_data.strength_plus,
         'plus_dexterity': atributs_data.dexterity_plus,
         'plus_intelligence': atributs_data.intelligence_plus,
-        'plus_charisma': atributs_data.charisma_plus,
         'plus_vitality': atributs_data.vitality_plus,
         'plus_luck': atributs_data.luck_plus,
         # ATRIBUTY - SUMA
@@ -100,14 +98,12 @@ def profile(request):
         'suma_strength': atributs_data.suma_strength,
         'suma_dexterity': atributs_data.suma_dexterity,
         'suma_intelligence': atributs_data.suma_intelligence,
-        'suma_charisma': atributs_data.suma_charisma,
         'suma_vitality': atributs_data.suma_vitality,
         'suma_luck': atributs_data.suma_luck,
         # ATRIBUTY - CENA
         'strength_cost': atributs_data.strength_cena,
         'dexterity_cost': atributs_data.dexterity_cena,
         'intelligence_cost': atributs_data.intelligence_cena,
-        'charisma_cost': atributs_data.charisma_cena,
         'vitality_cost': atributs_data.vitality_cena,
         'luck_cost': atributs_data.luck_cena,
 

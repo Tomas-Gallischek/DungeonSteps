@@ -28,12 +28,6 @@ def atr_update(request):
             operation = 'minus'
             buy_or_sell(request, currency_type, amount, operation)
             atributy_model.intelligence_plus += 1
-        elif attribute == "charisma":
-            amount = atributy_model.charisma_cena
-            currency_type = 'gold'
-            operation = 'minus'
-            buy_or_sell(request, currency_type, amount, operation)
-            atributy_model.charisma_plus += 1
         elif attribute == "vitality":
             amount = atributy_model.vitality_cena
             currency_type = 'gold'
