@@ -1,44 +1,46 @@
 {% extends "base.html" %}
+{% load custom_filters %} 
 
+{% block title %}Profil{% endblock title %}
 {% block content %}
 
-  <form method="POST" action="{% url 'logout-url' %}">
-        {% csrf_token %}
-      <button type="submit">Odhlásit se</button>
-  </form>
+<form method="POST" action="{% url 'logout-url' %}">
+{% csrf_token %}
+<button type="submit">Odhlásit se</button>
+</form>
 
-  <h1>{{ request.user.username }}</h1>
-  <h2>{{ rasa }}
-    {{ povolani }}
+<h1>{{ request.user.username }}</h1>
+<h2>{{ rasa }}
+{{ povolani }}
 </h2>
-    <p>Level postavy: <span id="level-value">{{ lvl_aktual }}</span></p>
-    <p>PROGRES: {{ xp_nasetrene }}/{{ XP_potrebne_next }}</p>
-    <p>XP: <span id="xp-value">{{ XP_aktual }}</span></p>
+<p>Level postavy: <span id="level-value">{{ lvl_aktual }}</span></p>
+<p>PROGRES: {{ xp_nasetrene }}/{{ XP_potrebne_next }}</p>
+<p>XP: <span id="xp-value">{{ XP_aktual }}</span></p>
 
-    <form action="{% url 'plus_xp-url' %}" method="POST">
-        {% csrf_token %}
-        Počet XP: <input type="number" name="new_xp" min="1" value="1">
-        <button type="submit">Získat XP</button>
-    </form>
+<form action="{% url 'plus_xp-url' %}" method="POST">
+{% csrf_token %}
+Počet XP: <input type="number" name="new_xp" min="1" value="1">
+<button type="submit">Získat XP</button>
+</form>
 
-    <p>Goldy: <span id="gold-value">{{ gold_own }}</span></p>
-    <p>Dungeon tokeny: <span id="dungeon-token-value">{{ dungeon_token_own }}</span></p>
+<p>Goldy: <span id="gold-value">{{ gold_own }}</span></p>
+<p>Dungeon tokeny: <span id="dungeon-token-value">{{ dungeon_token_own }}</span></p>
 
 <form action="{% url 'gold_transaction-url' %}" method="POST">
-    {% csrf_token %}
-    <input type="number" name="amount" min="1" value="1">
-    
-    <select name="operation">
-        <option value="plus">Přidat</option>
-        <option value="minus">Odebrat</option>
-    </select>
-    
-    <select name="currency_type">
-        <option value="gold">Goldy</option>
-        <option value="dungeon_token">Dungeon tokeny</option>
-    </select>
+{% csrf_token %}
+<input type="number" name="amount" min="1" value="1">
 
-    <button type="submit">Potvrdit</button>
+<select name="operation">
+<option value="plus">Přidat</option>
+<option value="minus">Odebrat</option>
+</select>
+
+<select name="currency_type">
+<option value="gold">Goldy</option>
+<option value="dungeon_token">Dungeon tokeny</option>
+</select>
+
+<button type="submit">Potvrdit</button>
 </form>
 
 <h1>ATRIBUTY:</h1>
@@ -46,87 +48,93 @@
 <p>HP: <span id="hp-value">{{ suma_hp }}</span></p>
 <p></p>
 <p>Strength: <span id="strength-value">{{ suma_strength }}</span></p>
-    <form action="{% url 'atributs-update-url' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="attribute" value="strength">
-        <button type="submit">+</button>
-    </form>
+<form action="{% url 'atributs-update-url' %}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="attribute" value="strength">
+<button type="submit">+</button>
+</form>
 <p>Cena: <span id="strength-price">{{ strength_cost }}</span></p>
 
 <p>Dexterity: <span id="dexterity-value">{{ suma_dexterity }}</span></p>
-    <form action="{% url 'atributs-update-url' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="attribute" value="dexterity">
-        <button type="submit">+</button>
-    </form>
+<form action="{% url 'atributs-update-url' %}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="attribute" value="dexterity">
+<button type="submit">+</button>
+</form>
 <p>Cena: <span id="dexterity-price">{{ dexterity_cost }}</span></p>
 
 <p>Intelligence: <span id="intelligence-value">{{ suma_intelligence }}</span></p>
-    <form action="{% url 'atributs-update-url' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="attribute" value="intelligence">
-        <button type="submit">+</button>
-    </form>
+<form action="{% url 'atributs-update-url' %}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="attribute" value="intelligence">
+<button type="submit">+</button>
+</form>
 <p>Cena: <span id="intelligence-price">{{ intelligence_cost }}</span></p>
 
 <p>Charisma: <span id="charisma-value">{{ suma_charisma }}</span></p>
-    <form action="{% url 'atributs-update-url' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="attribute" value="charisma">
-        <button type="submit">+</button>
-    </form>
+<form action="{% url 'atributs-update-url' %}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="attribute" value="charisma">
+<button type="submit">+</button>
+</form>
 <p>Cena: <span id="charisma-price">{{ charisma_cost }}</span></p>
 
 <p>Vitality: <span id="vitality-value">{{ suma_vitality }}</span></p>
-    <form action="{% url 'atributs-update-url' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="attribute" value="vitality">
-        <button type="submit">+</button>
-    </form>
+<form action="{% url 'atributs-update-url' %}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="attribute" value="vitality">
+<button type="submit">+</button>
+</form>
 <p>Cena: <span id="vitality-price">{{ vitality_cost }}</span></p>
 
 <p>Luck: <span id="luck-value">{{ suma_luck }}</span></p>
-    <form action="{% url 'atributs-update-url' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="attribute" value="luck">
-        <button type="submit">+</button>
-    </form>
+<form action="{% url 'atributs-update-url' %}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="attribute" value="luck">
+<button type="submit">+</button>
+</form>
 <p>Cena: <span id="luck-price">{{ luck_cost }}</span></p>
+
+---
 
 <h1>INVENTÁŘ</h1>
 {% for item in inventory_items %}
-    {% if item.item_id > 1 %}
-    
-    <p>Název: {{ item.name }}</p>
-    <P>Cena: {{ item.price }} goldů</P>
-    <P>Kategorie: {{ item.item_category }}</P>
-
-    <form method="POST" action="{% url 'eqp-url' item.item_id %}">
-        {% csrf_token %}
-    <button type="submit">Nasadit</button>
-    </form>
-
-    <form method="POST" action="{% url 'sell_item-url' item.item_id %}">
-        {% csrf_token %}
-    <button type="submit">PRODAT ZA ({{ item.sell_price }} goldů)</button>
-    </form>
-    {% endif %}
+<div class="item-card">
+<h4>{{ item.name }}</h4>
+<img src="{{ item.object.img_init }}" alt="{{ item.name }}">
+<ul>
+{% for key, value in item.attributes.items %}
+<li><strong> {{ key|replace:"_: "|title }} :</strong> {{ value }}</li>
 {% endfor %}
+</ul>
+<form method="POST" action="{% url 'eqp-url' item.object.item_id %}">
+{% csrf_token %}
+<button type="submit">Nasadit</button>
+</form>
+<form method="POST" action="{% url 'sell_item-url' item.object.item_id %}">
+{% csrf_token %}
+<button type="submit">PRODAT ZA ({{ item.object.sell_price }} goldů)</button>
+</form>
+</div>
+{% endfor %}
+
+---
 
 <h1>EQUIP</h1>
 {% for item in equipment_items %}
-    {% if item.item_id > 1 %}
-
-    <p>Název: {{ item.name }}</p>
-    <P>Cena: {{ item.price }} goldů</P>
-    <P>Kategorie: {{ item.item_category }}</P>
-
-    <form method="POST" action="{% url 'de-eqp-url' item.item_id %}">
-        {% csrf_token %}
-    <button type="submit">Sundat</button>
-    </form>
-
-    {% endif %}
+<div class="item-card">
+<h4>{{ item.name }}</h4>
+<img src="{{ item.object.img_init }}" alt="{{ item.name }}">
+<ul>
+{% for key, value in item.attributes.items %}
+<li><strong> {{ key|replace:"_: "|title }} :</strong> {{ value }}</li>
+{% endfor %}
+</ul>
+<form method="POST" action="{% url 'de-eqp-url' item.object.item_id %}">
+{% csrf_token %}
+<button type="submit">Sundat</button>
+</form>
+</div>
 {% endfor %}
 
 

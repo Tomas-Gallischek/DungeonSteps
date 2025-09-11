@@ -49,11 +49,11 @@ def items_generator(request):
     n = random.randint(1, lvl)
     if n <= 5:
         slots = 0
-    elif n <= 15:
+    elif n <= 10:
         slots = 1
-    elif n <= 25:
+    elif n <= 20:
         slots = 2
-    elif n <= 35:
+    elif n <= 30:
         slots = 3
     else:
         slots = 4

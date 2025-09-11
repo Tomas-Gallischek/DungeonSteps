@@ -6,6 +6,10 @@ from hracapp.models import ShopOffer, INV, Economy
 from django.contrib.auth.decorators import login_required
 from hracapp.economy import buy_or_sell
 
+
+
+
+
 @login_required
 def shop(request):
     print(f"Spuštění funkce renderování obchodu")

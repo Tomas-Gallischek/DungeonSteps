@@ -20,44 +20,108 @@
 <h2>Nabídka zboží</h2>
 {% for item in items_in_shop %}
     <div>
-        <h3>{{ item.item_name }}</h3>
+        <h3>{{ item.name }}</h3>
 
-        {% if item.img_init %}
-            <p><strong>Obrázek:</strong> <img src="{{ item.img_init }}" alt="{{ item.item_name }}"></p>
-        {% endif %}
-
-        {% if item.description %}
-            <p><strong>Popis:</strong> {{ item.description }}</p>
+        {% if item.item_id %}
+            <p><strong>ID předmětu:</strong> {{ item.item_id }}</p>
         {% endif %}
 
         {% if item.level_required %}
             <p><strong>Požadovaná úroveň:</strong> {{ item.level_required }}</p>
         {% endif %}
 
+        {% if item.item_type %}
+            <p><strong>Typ předmětu:</strong> {{ item.item_type }}</p>
+        {% endif %}
+
         {% if item.item_category %}
             <p><strong>Kategorie:</strong> {{ item.item_category }}</p>
         {% endif %}
-        
-        {% if item.slot_1_bonus and item.slot_1_value %}
-            <p><strong>{{ item.slot_1_bonus }}: </strong> ({{ item.slot_1_value }})</p>
+
+        {% if item.hp_flat_it_bonus %}
+            <p><strong>Bonus k životům:</strong> {{ item.hp_flat_it_bonus }}</p>
         {% endif %}
 
-        {% if item.slot_2_bonus and item.slot_2_value %}
-            <p><strong>{{ item.slot_2_bonus }}:</strong> ({{ item.slot_2_value }})</p>
+        {% if item.pvm_resist_procenta_it_bonus %}
+            <p><strong>Procentuální odolnost proti PVM:</strong> {{ item.pvm_resist_procenta_it_bonus }}%</p>
         {% endif %}
 
-        {% if item.slot_3_bonus and item.slot_3_value %}
-            <p><strong>{{ item.slot_3_bonus }}:</strong> ({{ item.slot_3_value }})</p>
+        {% if item.pvp_resist_procenta_it_bonus %}
+            <p><strong>Procentuální odolnost proti PVP:</strong> {{ item.pvp_resist_procenta_it_bonus }}%</p>
         {% endif %}
 
-        {% if item.slot_4_bonus and item.slot_4_value %}
-            <p><strong>{{ item.slot_4_bonus }}:</strong> ({{ item.slot_4_value }})</p>
+        {% if item.magic_resist_procenta_it_bonus %}
+            <p><strong>Procentuální odolnost proti magii:</strong> {{ item.magic_resist_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.heavy_resist_procenta_it_bonus %}
+            <p><strong>Procentuální odolnost proti těžkým zbraním:</strong> {{ item.heavy_resist_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.light_resist_procenta_it_bonus %}
+            <p><strong>Procentuální odolnost proti lehkým zbraním:</strong> {{ item.light_resist_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.otrava_resist_procenta_it_bonus %}
+            <p><strong>Procentuální odolnost proti otravě:</strong> {{ item.otrava_resist_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.bezvedomi_resist_procenta_it_bonus %}
+            <p><strong>Procentuální odolnost proti bezvědomí:</strong> {{ item.bezvedomi_resist_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.luck_flat_it_bonus %}
+            <p><strong>Bonus ke štěstí:</strong> {{ item.luck_flat_it_bonus }}</p>
+        {% endif %}
+
+        {% if item.str_flat_it_bonus %}
+            <p><strong>Bonus k síle:</strong> {{ item.str_flat_it_bonus }}</p>
+        {% endif %}
+
+        {% if item.dex_flat_it_bonus %}
+            <p><strong>Bonus k obratnosti:</strong> {{ item.dex_flat_it_bonus }}</p>
+        {% endif %}
+
+        {% if item.int_flat_it_bonus %}
+            <p><strong>Bonus k inteligenci:</strong> {{ item.int_flat_it_bonus }}</p>
+        {% endif %}
+
+        {% if item.vit_flat_it_bonus %}
+            <p><strong>Bonus k vitalitě:</strong> {{ item.vit_flat_it_bonus }}</p>
+        {% endif %}
+
+        {% if item.pvm_poskozeni_procenta_it_bonus %}
+            <p><strong>Procentuální bonus k poškození proti PVM:</strong> {{ item.pvm_poskozeni_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.pvp_poskozeni_procenta_it_bonus %}
+            <p><strong>Procentuální bonus k poškození proti PVP:</strong> {{ item.pvp_poskozeni_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.poskozeni_schopnosti_procenta_it_bonus %}
+            <p><strong>Procentuální bonus k poškození ze schopností:</strong> {{ item.poskozeni_schopnosti_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.poskozeni_utokem_procenta_it_bonus %}
+            <p><strong>Procentuální bonus k poškození z útoku:</strong> {{ item.poskozeni_utokem_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.sance_na_otravu_procenta_it_bonus %}
+            <p><strong>Procentuální šance na otravu:</strong> {{ item.sance_na_otravu_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.sance_na_bezvedomi_procenta_it_bonus %}
+            <p><strong>Procentuální šance na bezvědomí:</strong> {{ item.sance_na_bezvedomi_procenta_it_bonus }}%</p>
+        {% endif %}
+
+        {% if item.kriticke_poskozeni_procenta_it_bonus %}
+            <p><strong>Procentuální bonus ke kritickému poškození:</strong> {{ item.kriticke_poskozeni_procenta_it_bonus }}%</p>
         {% endif %}
 
         {% if item.price %}
             <p><strong>Cena:</strong> {{ item.price }} zlaťáků</p>
         {% endif %}
-
+        
         {% if item.min_dmg %}
             <p><strong>Minimální poškození:</strong> {{ item.min_dmg }}</p>
         {% endif %}
@@ -89,6 +153,8 @@
         {% if item.luk_bonus %}
             <p><strong>Bonus ke štěstí:</strong> {{ item.luk_bonus }}</p>
         {% endif %}
+        
+    </div>
         
         <form method="POST" action="{% url 'shop-buy-url' item.item_id %}">
             {% csrf_token %}

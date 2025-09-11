@@ -11,31 +11,75 @@ from . models import EQP, INV, XP_LVL, Character_bonus, Economy, Atributs, ShopO
 
 
 
+def get_non_empty_attributes(obj):
+    """
+    Vrátí slovník atributů objektu, které nejsou None, prázdné nebo 0.
+    """
+    attributes = {}
+    
+    # Seznam polí, která mohou mít hodnotu 0 a přesto by se měla zobrazit
+    # Přidej sem další pole, pokud bys potřeboval, aby se zobrazovala i s hodnotou 0
+    zero_allowed_fields = ['min_dmg', 'max_dmg', 'price', 'sell_price', 'armor', 'slots']
+
+    # Projdi všechna pole modelu
+    for field in obj._meta.get_fields():
+        # Přeskočíme vztahy (jako např. 'hrac')
+        if field.is_relation:
+            continue
+            
+        field_name = field.name
+        value = getattr(obj, field_name)
+        
+        # Kontrola, zda hodnota není None, prázdný řetězec
+        # Dále kontrola, zda hodnota není 0, pokud není v seznamu `zero_allowed_fields`
+        if value is not None and value != '':
+            if value != 0 or field_name in zero_allowed_fields:
+                attributes[field_name] = value
+                
+    return attributes
+
 @login_required
 def profile(request):
-
-    #INV.objects.all().delete()
-    #EQP.objects.all().delete()
-    #ShopOffer.objects.all().delete()
     user = request.user
-    inventory_items = inventory(request)
-    equipment_items = equipment(request)
+    
+    # Získání dat pro profil
+    inventory_items_raw = inventory(request)
+    equipment_items_raw = equipment(request)
     xp_lvl_data = XP_LVL.objects.get(hrac=user)
     economy_data = Economy.objects.get(hrac=user)
     atributs_data = Atributs.objects.get(hrac=user)
 
+    # Příprava inventáře
+    prepared_inventory_items = []
+    for item in inventory_items_raw:
+        item_data = {
+            'object': item, # Původní objekt pro případ, že ho potřebuješ v HTML
+            'name': item.name,
+            'attributes': get_non_empty_attributes(item)
+        }
+        prepared_inventory_items.append(item_data)
+        
+    # Příprava vybavených předmětů
+    prepared_equipment_items = []
+    for item in equipment_items_raw:
+        item_data = {
+            'object': item,
+            'name': item.name,
+            'attributes': get_non_empty_attributes(item)
+        }
+        prepared_equipment_items.append(item_data)
 
     context = {
-    # XP A LVL
+        # ... (ostatní data v contextu zůstanou beze změny)
         'XP_aktual': xp_lvl_data.xp,
         'lvl_aktual': xp_lvl_data.lvl,
         'lvl_next': xp_lvl_data.lvl + 1,
         'XP_potrebne_next': xp_lvl_data.xp_to_next_lvl,
         'xp_nasetrene': xp_lvl_data.xp_nasetreno,
-    # GOLDY
+        # GOLDY
         'gold_own': economy_data.gold,
         'dungeon_token_own': economy_data.dungeon_token,
-    # ATRIBUTY - BASE
+        # ATRIBUTY - BASE
         'base_hp': atributs_data.hp_base,
         'base_strength': atributs_data.strength_base,
         'base_dexterity': atributs_data.dexterity_base,
@@ -43,7 +87,7 @@ def profile(request):
         'base_charisma': atributs_data.charisma_base,
         'base_vitality': atributs_data.vitality_base,
         'base_luck': atributs_data.luck_base,
-    # ATRIBUTY - PLUS
+        # ATRIBUTY - PLUS
         'plus_hp': atributs_data.hp_vit,
         'plus_strength': atributs_data.strength_plus,
         'plus_dexterity': atributs_data.dexterity_plus,
@@ -51,7 +95,7 @@ def profile(request):
         'plus_charisma': atributs_data.charisma_plus,
         'plus_vitality': atributs_data.vitality_plus,
         'plus_luck': atributs_data.luck_plus,
-    # ATRIBUTY - SUMA
+        # ATRIBUTY - SUMA
         'suma_hp': atributs_data.suma_hp,
         'suma_strength': atributs_data.suma_strength,
         'suma_dexterity': atributs_data.suma_dexterity,
@@ -59,7 +103,7 @@ def profile(request):
         'suma_charisma': atributs_data.suma_charisma,
         'suma_vitality': atributs_data.suma_vitality,
         'suma_luck': atributs_data.suma_luck,
-    # ATRIBUTY - CENA
+        # ATRIBUTY - CENA
         'strength_cost': atributs_data.strength_cena,
         'dexterity_cost': atributs_data.dexterity_cena,
         'intelligence_cost': atributs_data.intelligence_cena,
@@ -67,17 +111,15 @@ def profile(request):
         'vitality_cost': atributs_data.vitality_cena,
         'luck_cost': atributs_data.luck_cena,
 
-    # INVENTÁŘ
-        'inventory_items': inventory_items,
-    # EQUIP
-        'equipment_items': equipment_items,
-    # OSTATNÍ
+        # INVENTÁŘ A VÝBAVA S FILTROVANÝMI ATRIBUTY
+        'inventory_items': prepared_inventory_items,
+        'equipment_items': prepared_equipment_items,
+        # OSTATNÍ
         'rasa': request.user.rasa,
         'povolani': request.user.povolani,
         'hrac': request.user,
     }
-       
-
+        
     return render(request, 'hracapp/profile.html', context)
 
 
