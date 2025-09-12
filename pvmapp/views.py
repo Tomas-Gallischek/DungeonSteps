@@ -16,6 +16,8 @@ def monster_generator(request):
 def random_mob_fight(request):
     fight_log = pvm_fight_funkce(request)
 
+    # + IMPORTOVAT INFORMACE O MOBCE A O HRÁČI, V SOUBOJI JE ČISTĚ SOUBOJ
+
     return render(request, 'pvmapp/random_mob_arena.html', fight_log)
 
 
