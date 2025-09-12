@@ -70,7 +70,6 @@ def mob_gen(request):
 
     dmg_atr = random.choice([choice[0] for choice in ATRIBUTS_CHOICES if choice[0] != 'none'])
 
-
     str = (random.randint(1, 10) * dificulty_koeficient) * mob_lvl
     if dmg_atr == 'strength':
         str = str + (str * 2)
@@ -85,7 +84,6 @@ def mob_gen(request):
 
     hp = ((100 + (vit * 5)) * dificulty_koeficient) * mob_lvl
 
-
     magic_resist = 1 + ( (random.randint(1, 50)) / 100 )
     light_resist = 1 + ( (random.randint(1, 50)) / 100 )
     heavy_resist = 1 + ( (random.randint(1, 50)) / 100 )
@@ -98,20 +96,17 @@ def mob_gen(request):
     sance_na_bezvedomi = 1 + ( (random.randint(1, 50)) / 100 )
 
     sance_na_kriticky_utok = (luck * 5 ) / mob_lvl
-    kriticke_poskozeni = 1 + ( (random.randint(1, 50)) / 100 )
+    if sance_na_kriticky_utok > 50:
+        sance_na_kriticky_utok = 50
+    kriticke_poskozeni = ( (random.randint(1, 50)) / 100 )
 
-    armor = 50 * dificulty_koeficient * mob_lvl
+    armor = 5 * dificulty_koeficient * (mob_lvl * 2)
 
-    armor_normal = armor
-    armor_light = (armor * light_resist)
-    armor_heavy = (armor * heavy_resist)
-    armor_magic = (armor * magic_resist)
-
-    dmg_koef = mob_lvl ** dificulty_koeficient
+    dmg_koef = mob_lvl * dificulty_koeficient
     max_dmg_random = random.sample(range(1, 5), 1)[0]
 
     min_dmg = random.randint(1, dmg_koef) 
-    max_dmg = min_dmg * max_dmg_random
+    max_dmg = (min_dmg * max_dmg_random) + dificulty_koeficient #Kdyby byl max_dmg_random 1 
 
 
     Mobs.objects.create(
