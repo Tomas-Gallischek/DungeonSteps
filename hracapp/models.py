@@ -7,6 +7,7 @@ from pvmapp.models import Mobs
 
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):
+    # ... (zbytek modelu je beze změny)
     ITEM_TYPE_CHOICES = (
         ('universal', 'Univerzální'),
         ('heavy', 'Těžké'),
@@ -586,19 +587,26 @@ class EQP(models.Model):
         return f"{self.name} ({self.hrac})"
 
 
-class FightLogEntry(models.Model):
-    fight_id = models.UUIDField()  # Unikátní ID pro celý souboj
+class Fight(models.Model):
+    fight_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(Playerinfo, on_delete=models.CASCADE)
     mob = models.ForeignKey(Mobs, on_delete=models.CASCADE)
-    round_number = models.IntegerField(default=1, blank=True, null=True)  # Číslo kola v rámci souboje
+    winner = models.CharField(max_length=50, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    description = models.TextField()  # Popis události (např. "Hráč způsobil 15 poškození")
+
+    def __str__(self):
+        return f"Souboj ID: {self.fight_id} - Vítěz: {self.winner}"
+
+class FightLogEntry(models.Model):
+    fight = models.ForeignKey(Fight, on_delete=models.CASCADE, related_name='logs')
+    round_number = models.IntegerField(default=1, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.TextField()
     player_hp_before = models.IntegerField(null=True, blank=True)
     player_hp_after = models.IntegerField(null=True, blank=True)
     mob_hp_before = models.IntegerField(null=True, blank=True)
     mob_hp_after = models.IntegerField(null=True, blank=True)
-    event_type = models.CharField(max_length=50) # Např. 'player_attack', 'mob_attack', 'fight_end'
-    winner = models.CharField(max_length=50, null=True, blank=True) # Vítěz souboje, uloží se jen na konci¨
+    event_type = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"FightLogEntry {self.fight_id} - Round {self.round_number} - {self.event_type}"
+        return f"Kolo {self.round_number} - {self.event_type}"

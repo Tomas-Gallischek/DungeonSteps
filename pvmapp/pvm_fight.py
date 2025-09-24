@@ -1,11 +1,9 @@
 import random
 from .models import Mobs
-from hracapp.models import Atributs, Playerinfo, FightLogEntry
+from hracapp.models import Atributs, Playerinfo, Fight, FightLogEntry
 import uuid
 from .mobs_off_def import mob_attack, mob_deffence
 from .player_off_def import player_attack, player_deffence
-
-
 
 
 def pvm_fight_funkce(request):
@@ -16,8 +14,11 @@ def pvm_fight_funkce(request):
     mob = random.choice(all_mobs)
     mob_id = mob.mob_id
     
-    # Vytvoření unikátního ID pro tento souboj
-    fight_uuid = uuid.uuid4() 
+    # Vytvoření instance Fight namísto proměnné
+    fight = Fight.objects.create(
+        user=user,
+        mob=mob,
+    )
     
     print(f"Začíná souboj mezi hráčem {user} a příšerou {mob.name}")
 
@@ -31,9 +32,8 @@ def pvm_fight_funkce(request):
 
     # Log začátku souboje
     FightLogEntry.objects.create(
-        fight_id=fight_uuid,
-        user=user,
-        mob=mob,
+        fight=fight,  # Propojení s instancí Fight
+        # Odstraněny proměnné 'user' a 'mob'
         round_number=round_number+1,
         description=f"Souboj začíná mezi hráčem {user} a příšerou {mob.name}.",
         event_type="fight_start"
@@ -44,53 +44,48 @@ def pvm_fight_funkce(request):
         round_number += 1
         print(f"round_number č. {round_number}")       
 
-        # Log kola
-        FightLogEntry.objects.create(
-            fight_id=fight_uuid,
-            user=user,
-            mob=mob,
-            round_number=round_number, 
-            description=f"round_number č. {round_number} začíná.",
-            event_type="round_start"
-        )
-
         if player_iniciativa >= mob_iniciativa:
-            mob_hp = utok_hrace(request, mob_id, mob_hp, fight_uuid, round_number, player_hp)
+            mob_hp = utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp)
             if mob_hp <= 0:
-                WINNER = user
+                WINNER = str(user)
                 print(f"Příšera {mob.name} byla poražena!")
                 break
-            player_hp = utok_prisery(request, mob_id, player_hp, fight_uuid, round_number, mob_hp)
+            player_hp = utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp)
             if player_hp <= 0:
-                WINNER = mob.name
+                WINNER = str(mob.name)
                 print(f"Hráč {user} byl poražen!")
                 break
         if mob_iniciativa > player_iniciativa:
-            player_hp = utok_prisery(request, mob_id, player_hp, fight_uuid, round_number, mob_hp)
+            player_hp = utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp)
             if player_hp <= 0:
-                WINNER = mob.name
+                WINNER = str(mob.name)
                 print(f"Hráč {user} byl poražen!")
                 break
-            mob_hp = utok_hrace(request, mob_id, mob_hp, fight_uuid, round_number, player_hp)
+            mob_hp = utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp)
             if mob_hp <= 0:
-                WINNER = user
+                WINNER = str(user)
                 print(f"Příšera {mob.name} byla poražena!")
                 break
     if WINNER:
         winner_name = WINNER
+        fight.winner = winner_name
+        fight.save() # Uložíme vítěze v instanci Fight
+        
         FightLogEntry.objects.create(
-            fight_id=fight_uuid,
-            user=user,
-            mob=mob,
+            fight=fight,
+            # Odstraněny proměnné 'user' a 'mob'
             round_number=round_number,
             description=f"Souboj končí. Vítězem je {winner_name}.",
             event_type="fight_end",
-            winner=winner_name
+            player_hp_after=player_hp,
+            player_hp_before=player_hp,
+            mob_hp_before=mob_hp,
+            mob_hp_after=mob_hp,
         )
-    return fight_uuid
+    return fight.fight_id
 
 
-def utok_hrace(request, mob_id, mob_hp, fight_uuid, round_number, player_hp):
+def utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp):
     print("Hráč útočí")
 
     p_attack = player_attack(request)
@@ -121,13 +116,12 @@ def utok_hrace(request, mob_id, mob_hp, fight_uuid, round_number, player_hp):
 
     # Vytvoření záznamu do logu
     FightLogEntry.objects.create(
-        fight_id=fight_uuid,
-        user=request.user,
-        mob=Mobs.objects.get(mob_id=mob_id),
+        fight=fight,
+        # Odstraněny proměnné 'user' a 'mob'
         round_number=round_number,
         description=f"Hráč útočí. Způsobil {mob_hp_change} poškození. Jednalo se o {attack_status} / {attack_type}.",
-        player_hp_before=player_hp,  # Předpokládám, že máš přístup k atributům
-        player_hp_after=player_hp,  # Toto bude potřeba řešit jinak, viz poznámka
+        player_hp_before=player_hp,
+        player_hp_after=player_hp,
         mob_hp_before=mob_hp_before,
         mob_hp_after=mob_hp_after,
         event_type="player_attack"
@@ -135,7 +129,7 @@ def utok_hrace(request, mob_id, mob_hp, fight_uuid, round_number, player_hp):
     return mob_hp
 
 
-def utok_prisery(request, mob_id, player_hp, fight_uuid, round_number, mob_hp):
+def utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp):
     print("Příšera útočí")
 
     m_attack = mob_attack(request, mob_id)
@@ -166,18 +160,15 @@ def utok_prisery(request, mob_id, player_hp, fight_uuid, round_number, mob_hp):
 
     # Vytvoření záznamu do logu
     FightLogEntry.objects.create(
-        fight_id=fight_uuid,
-        user=request.user,
-        mob=Mobs.objects.get(mob_id=mob_id),
+        fight=fight,
+        # Odstraněny proměnné 'user' a 'mob'
         round_number=round_number,
         description=f"Příšera útočí. Způsobila {player_hp_change} poškození. Jednalo se o {attack_status} / {attack_type}.",
         player_hp_before=player_hp_before,
         player_hp_after=player_hp_after,
-        mob_hp_before=mob_hp,  # Toto bude potřeba řešit jinak
-        mob_hp_after=mob_hp,  # Toto bude potřeba řešit jinak
+        mob_hp_before=mob_hp,
+        mob_hp_after=mob_hp,
         event_type="mob_attack"
     )
 
     return player_hp
-
-

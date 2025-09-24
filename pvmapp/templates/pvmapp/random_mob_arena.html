@@ -3,6 +3,13 @@
 {% block content %}
 <h1>Souboj s náhodnou příšerou</h1>
 
+<p>Výsledek souboje: {{ winner_name }} vyhrál(a)!</p>
+<p>Záznam souboje:</p>
+{% for entry in fight_log_entries %}
+    <p>{{ entry.round_number }} - {{ entry.description }}</p>
+{% endfor %}
+
+
 
 <form action="">
     <button type="submit" formaction="{% url 'pvm_home' %}">Návrat do ARÉNY</button>
