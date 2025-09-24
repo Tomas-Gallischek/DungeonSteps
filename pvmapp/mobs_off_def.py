@@ -63,8 +63,8 @@ def mob_attack(request, mob_id):
 
 
 
-    min_dmg = mob.min_dmg
-    max_dmg = mob.max_dmg
+    min_dmg = round(mob.min_dmg)
+    max_dmg = round(mob.max_dmg)
 
     random_dmg = random.randint(min_dmg, max_dmg)
 

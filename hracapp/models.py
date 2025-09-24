@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Sum
+import uuid
+from pvmapp.models import Mobs
 
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):
@@ -582,16 +584,21 @@ class EQP(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.hrac})"
-    
 
-class fight_log(models.Model):
-    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='fight_log', blank=True)
-    mob_ID = models.IntegerField(blank=True, null=True)
-    
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+class FightLogEntry(models.Model):
+    fight_id = models.UUIDField()  # Unikátní ID pro celý souboj
+    user = models.ForeignKey(Playerinfo, on_delete=models.CASCADE)
+    mob = models.ForeignKey(Mobs, on_delete=models.CASCADE)
+    round_number = models.IntegerField(default=1, blank=True, null=True)  # Číslo kola v rámci souboje
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.TextField()  # Popis události (např. "Hráč způsobil 15 poškození")
+    player_hp_before = models.IntegerField(null=True, blank=True)
+    player_hp_after = models.IntegerField(null=True, blank=True)
+    mob_hp_before = models.IntegerField(null=True, blank=True)
+    mob_hp_after = models.IntegerField(null=True, blank=True)
+    event_type = models.CharField(max_length=50) # Např. 'player_attack', 'mob_attack', 'fight_end'
+    winner = models.CharField(max_length=50, null=True, blank=True) # Vítěz souboje, uloží se jen na konci¨
 
-        # Po uložení nového záznamu zkontroluj počet záznamů a smaž staré, pokud je jich více než 50
-        logs = fight_log.objects.filter(hrac=self.hrac).order_by('-created_at')
+    def __str__(self):
+        return f"FightLogEntry {self.fight_id} - Round {self.round_number} - {self.event_type}"

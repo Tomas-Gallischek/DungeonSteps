@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Economy_Log, Playerinfo, XP_LVL, Economy, Atributs, INV, EQP, Character_bonus, ShopOffer, XP_Log
+from .models import Economy_Log, FightLogEntry, Playerinfo, XP_LVL, Economy, Atributs, INV, EQP, Character_bonus, ShopOffer, XP_Log
 
 
 # ==== INLINES ====
@@ -54,6 +54,7 @@ class EconomyLogInline(admin.TabularInline):
     readonly_fields = ('timestamp',)
     verbose_name_plural = 'Záznamy ekonomiky'
 
+
 # ==== PLAYERINFO ADMIN ====
 
 @admin.register(Playerinfo)
@@ -91,3 +92,12 @@ class CharacterBonusAdmin(admin.ModelAdmin):
     list_display = ('hrac', 'hp_flat_it_bonus', 'pvm_resist_procent_it_bonus')
     search_fields = ('hrac__username',)
     readonly_fields = [field.name for field in Character_bonus._meta.fields]
+
+class FightLogEntryAdmin(admin.ModelAdmin):
+    model = FightLogEntry
+    extra = 0
+    can_delete = True
+    readonly_fields = ('fight_id', 'user', 'mob', 'round_number', 'description', 'event_type', 'timestamp', 'player_hp_before', 'player_hp_after', 'mob_hp_before', 'mob_hp_after')
+    verbose_name_plural = 'Záznamy soubojů'
+
+admin.site.register(FightLogEntry, FightLogEntryAdmin)
