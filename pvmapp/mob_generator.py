@@ -1,6 +1,7 @@
 import random
 from .models import Mobs
 import random
+from hracapp.models import XP_LVL
 
 ATRIBUTS_CHOICES = (
     ('strength', 'Síla'),
@@ -62,11 +63,14 @@ monster_names = [
 ]
 
 def mob_gen(request):
-    
+    user = request.user
+    user_lvl = XP_LVL.objects.get(hrac=user).lvl
     name = random.choice(monster_names)
     mob_id = random.randint(1000, 99999)
     dificulty_koeficient = random.randint(1, 5)
-    mob_lvl = random.randint(1, 20)
+    mob_lvl_minus = user_lvl - 3
+    mob_lvl_plus = user_lvl + 3
+    mob_lvl = random.randint(mob_lvl_minus, mob_lvl_plus)
 
     dmg_atr = random.choice([choice[0] for choice in ATRIBUTS_CHOICES if choice[0] != 'none'])
 
@@ -137,4 +141,4 @@ def mob_gen(request):
         max_dmg=max_dmg
     )
 
-    print(f"Generován mob: {name}, ID: {mob_id}, Úroveň: {mob_lvl}, Síla: {str}, Obratnost: {dex}, Inteligence: {int}, Vitalita: {vit}, Štěstí: {luck}, HP: {hp}, Zbraň: {min_dmg}-{max_dmg} DMG, Atribut poškození: {dmg_atr}")
+    print(f"Generován mob: {name}, ID: {mob_id}, OBTÍŽNOST: {dificulty_koeficient}, Úroveň: {mob_lvl}, Síla: {str}, Obratnost: {dex}, Inteligence: {int}, Vitalita: {vit}, Štěstí: {luck}, HP: {hp}, Zbraň: {min_dmg}-{max_dmg} DMG, Atribut poškození: {dmg_atr}")

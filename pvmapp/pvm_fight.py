@@ -5,7 +5,11 @@ from .mobs_off_def import mob_attack, mob_deffence
 from .player_off_def import player_attack, player_deffence
 
 
+# GEMINI MI VYGENEROVAL SUPER NÁVRH NA DATABÁZI LOGŮ, TAK TO UDĚLEJ AŽ NA TO BUDEŠ MÍT SÍLU A ČAS
+
+
 def pvm_fight_funkce(request):
+    WINNER = None
     user = request.user
     atributs = Atributs.objects.get(hrac=user)
     all_mobs = Mobs.objects.all()
@@ -21,50 +25,53 @@ def pvm_fight_funkce(request):
     mob_iniciativa = random.randint(1, 200)
 
     while mob_hp > 0 and player_hp > 0:
+        kolo += 1
         print(f"Kolo č. {kolo}")       
 
         if player_iniciativa >= mob_iniciativa:
-            mob_hp = utok_hrace(request, user, mob_id, mob_hp, mob)
+            mob_hp = utok_hrace(request, mob_id, mob_hp)
             if mob_hp <= 0:
                 WINNER = user
                 print(f"Příšera {mob.name} byla poražena!")
                 break
-            player_hp = utok_prisery(request, user, mob_id, player_hp, mob)
+            player_hp = utok_prisery(request, mob_id, player_hp)
             if player_hp <= 0:
                 WINNER = mob.name
                 print(f"Hráč {user} byl poražen!")
                 break
         if mob_iniciativa > player_iniciativa:
-            player_hp = utok_prisery(request, user, mob_id, player_hp, mob)
+            player_hp = utok_prisery(request, mob_id, player_hp)
             if player_hp <= 0:
                 WINNER = mob.name
                 print(f"Hráč {user} byl poražen!")
                 break
-            mob_hp = utok_hrace(request, user, mob_id, mob_hp, mob)
+            mob_hp = utok_hrace(request, mob_id, mob_hp)
             if mob_hp <= 0:
                 WINNER = user
+                kolo = 0
                 print(f"Příšera {mob.name} byla poražena!")
                 break
 
 
 
 
-def utok_hrace(request, user, mob_id, mob_hp, mob):
+def utok_hrace(request, mob_id, mob_hp):
     print("Hráč útočí")
 
     p_attack = player_attack(request)
-    m_deffence = mob_deffence(mob_id)
+    m_deffence = mob_deffence(request, mob_id)
 
     attack_status = p_attack['attack_status']
+    attack_type = p_attack['attack_type']
 
-    if p_attack['attack_type'] == 'light':
+    if attack_type == 'light':
         dmg = p_attack['final_attack'] - m_deffence['armor_light']
-    elif p_attack['attack_type'] == 'heavy':
+    elif attack_type == 'heavy':
         dmg = p_attack['final_attack'] - m_deffence['armor_heavy']
-    elif p_attack['attack_type'] == 'magic':
+    elif attack_type == 'magic':
         dmg = p_attack['final_attack'] - m_deffence['armor_magic']
     else:
-        dmg = p_attack['final_attack'] - m_deffence['armor']
+        dmg = p_attack['final_attack'] - m_deffence['armor_normal']
 
     if dmg < 0:
         dmg = 0
@@ -74,25 +81,28 @@ def utok_hrace(request, user, mob_id, mob_hp, mob):
     mob_hp_after = mob_hp_before - mob_hp_change
     mob_hp = mob_hp_after
 
+    print(f"Způsobené poškození: {mob_hp_change}, jednalo se o {attack_status} / {attack_type}, životy příšery před útokem: {mob_hp_before}, životy příšery po útoku: {mob_hp_after}")
+
     return mob_hp
 
 
-def utok_prisery(request, user, mob_id, player_hp, mob):
+def utok_prisery(request, mob_id, player_hp):
     print("Příšera útočí")
 
-    m_attack = mob_attack(mob_id)
+    m_attack = mob_attack(request, mob_id)
     p_deffence = player_deffence(request)
 
     attack_status = m_attack['attack_status']
+    attack_type = m_attack['attack_type']
 
-    if m_attack['attack_type'] == 'light':
+    if attack_type == 'light':
         dmg = m_attack['final_attack'] - p_deffence['armor_light']
-    elif m_attack['attack_type'] == 'heavy':
+    elif attack_type == 'heavy':
         dmg = m_attack['final_attack'] - p_deffence['armor_heavy']
-    elif m_attack['attack_type'] == 'magic':
+    elif attack_type == 'magic':
         dmg = m_attack['final_attack'] - p_deffence['armor_magic']
     else:
-        dmg = m_attack['final_attack'] - p_deffence['armor']
+        dmg = m_attack['final_attack'] - p_deffence['armor_normal']
 
     if dmg < 0:
         dmg = 0
@@ -101,6 +111,9 @@ def utok_prisery(request, user, mob_id, player_hp, mob):
     player_hp_change = round(dmg)
     player_hp_after = player_hp_before - player_hp_change
     player_hp = player_hp_after
+
+    print(f"Způsobené poškození: {player_hp_change}, jednalo se o {attack_status} / {attack_type}, životy hráče před útokem: {player_hp_before}, životy hráče po útoku: {player_hp_after}")
+    
 
     return player_hp
 

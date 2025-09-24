@@ -33,7 +33,7 @@ def mob_info(mob_id):
     return m_info
 
 @login_required
-def mob_attack(mob_id):
+def mob_attack(request, mob_id):
     mob = Mobs.objects.get(mob_id=mob_id)
     str = mob.str
     dex = mob.dex
@@ -42,13 +42,17 @@ def mob_attack(mob_id):
     dmg_atr = mob.dmg_atr
 
     if dmg_atr == 'strength':
-        dmg_atr_value = str
+        dmg_atr_value = str / 10
+        attack_type = 'heavy' 
     elif dmg_atr == 'dexterity':
-        dmg_atr_value = dex
+        dmg_atr_value = dex / 10
+        attack_type = 'light'
     elif dmg_atr == 'intelligence':
-        dmg_atr_value = int
+        dmg_atr_value = int / 10
+        attack_type = 'magic'
     else:
         dmg_atr_value = 1
+        attack_type = None
 
     poskozeni_schopnosti = mob.poskozeni_schopnosti
     poskozeni_utokem = mob.poskozeni_utokem
@@ -57,14 +61,7 @@ def mob_attack(mob_id):
     sance_na_kriticky_utok = mob.sance_na_kriticky_utok
     kriticke_poskozeni = mob.kriticke_poskozeni
 
-    if dmg_atr == 'strength':
-        attack_type = 'heavy'
-    elif dmg_atr == 'dexterity':
-        attack_type = 'light'
-    elif dmg_atr == 'intelligence':
-        attack_type = 'magic'
-    else:
-        attack_type = NONE
+
 
     min_dmg = mob.min_dmg
     max_dmg = mob.max_dmg
@@ -89,14 +86,15 @@ def mob_attack(mob_id):
 
 
 @login_required
-def mob_deffence(mob_id):
+def mob_deffence(request, mob_id):
     mob = Mobs.objects.get(mob_id=mob_id)
 
     hp = mob.hp
 
-    light_resist = mob.light_resist
-    heavy_resist = mob.heavy_resist
-    magic_resist = mob.magic_resist
+    heavy_resist = mob.heavy_resist + (mob.str / 1000)
+    magic_resist = mob.magic_resist + (mob.int / 1000)
+    light_resist = mob.light_resist + (mob.dex / 1000)
+    # light_resist_procenta_it_bonus =
     # otrava_resist_procenta_it_bonus = 
     # bezvedomi_resist_procenta_it_bonus = 
 

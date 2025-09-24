@@ -582,3 +582,16 @@ class EQP(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.hrac})"
+    
+
+class fight_log(models.Model):
+    hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='fight_log', blank=True)
+    mob_ID = models.IntegerField(blank=True, null=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Po uložení nového záznamu zkontroluj počet záznamů a smaž staré, pokud je jich více než 50
+        logs = fight_log.objects.filter(hrac=self.hrac).order_by('-created_at')
