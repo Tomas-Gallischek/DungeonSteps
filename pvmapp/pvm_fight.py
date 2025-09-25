@@ -111,15 +111,12 @@ def utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp):
     mob_hp_after = mob_hp_before - mob_hp_change
     mob_hp = mob_hp_after
 
-    print(f"Způsobené poškození: {mob_hp_change}, jednalo se o {attack_status} / {attack_type}, životy příšery před útokem: {mob_hp_before}, životy příšery po útoku: {mob_hp_after}")
-
-
     # Vytvoření záznamu do logu
     FightLogEntry.objects.create(
         fight=fight,
         # Odstraněny proměnné 'user' a 'mob'
         round_number=round_number,
-        description=f"Hráč útočí. Způsobil {mob_hp_change} poškození. Jednalo se o {attack_status} / {attack_type}.",
+        description=f"Útok hráče: {request.user} Způsobené poškození: {mob_hp_change}, jednalo se o {attack_status} / {attack_type}, životy příšery před útokem: {mob_hp_before}, životy příšery po útoku: {mob_hp_after}",
         player_hp_before=player_hp,
         player_hp_after=player_hp,
         mob_hp_before=mob_hp_before,
@@ -132,6 +129,7 @@ def utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp):
 def utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp):
     print("Příšera útočí")
 
+    mob_name = Mobs.objects.get(mob_id=mob_id)
     m_attack = mob_attack(request, mob_id)
     p_deffence = player_deffence(request)
 
@@ -155,15 +153,12 @@ def utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp):
     player_hp_after = player_hp_before - player_hp_change
     player_hp = player_hp_after
 
-    print(f"Způsobené poškození: {player_hp_change}, jednalo se o {attack_status} / {attack_type}, životy hráče před útokem: {player_hp_before}, životy hráče po útoku: {player_hp_after}")
-    
-
     # Vytvoření záznamu do logu
     FightLogEntry.objects.create(
         fight=fight,
         # Odstraněny proměnné 'user' a 'mob'
         round_number=round_number,
-        description=f"Příšera útočí. Způsobila {player_hp_change} poškození. Jednalo se o {attack_status} / {attack_type}.",
+        description=f"Útok příšery: {mob_name} Způsobené poškození: {player_hp_change}, jednalo se o {attack_status} / {attack_type}, životy hráče před útokem: {player_hp_before}, životy hráče po útoku: {player_hp_after}",
         player_hp_before=player_hp_before,
         player_hp_after=player_hp_after,
         mob_hp_before=mob_hp,

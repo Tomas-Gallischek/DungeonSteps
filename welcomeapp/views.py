@@ -22,14 +22,14 @@ def register(request):
             XP_LVL.objects.create(hrac=user)
             XP_Log.objects.create(hrac=user)
             Economy.objects.create(hrac=user)
-            Atributs.objects.create(hrac=user)
             Character_bonus.objects.create(hrac=user)
+            Atributs.objects.create(hrac=user)
             ShopOffer.objects.create(hrac=user)
             INV.objects.create(hrac=user)
             EQP.objects.create(hrac=user)
             
             login(request, user)
-            rasa_povolani_bonus_create(request) # <-- Naštení základních hodnota atributů
+            rasa_povolani_bonus_create(request) # <-- Načtení základních hodnot atributů
             print(f"Uživatel {user.username} byl úspěšně zaregistrován a přihlášen.")
 
             return redirect('profile-url')
