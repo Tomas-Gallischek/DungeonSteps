@@ -68,9 +68,16 @@ def mob_gen(request):
     name = random.choice(monster_names)
     mob_id = random.randint(1000, 99999)
     dificulty_koeficient = random.uniform(1, 3)
-    mob_lvl_minus = user_lvl - 3
-    mob_lvl_plus = user_lvl + 3
-    mob_lvl = random.randint(mob_lvl_minus, mob_lvl_plus)
+
+    if user_lvl >= 6:
+        mob_lvl_minus = round(user_lvl * 0.9)
+        mob_lvl_plus = round(user_lvl * 1.1)
+        if mob_lvl_minus == mob_lvl_plus:
+            mob_lvl_plus += 1
+        mob_lvl = random.randint(mob_lvl_minus, mob_lvl_plus)
+    else:
+        mob_lvl = user_lvl
+
 
     dmg_atr = random.choice([choice[0] for choice in ATRIBUTS_CHOICES if choice[0] != 'none'])
 
@@ -87,6 +94,8 @@ def mob_gen(request):
     luck = round((random.randint(1, 5) * dificulty_koeficient) * mob_lvl)   
 
     hp = round(((100 + (vit * 5)) * dificulty_koeficient) * round(mob_lvl/2))
+    if hp <= 100:
+        hp = 100
 
     magic_resist = 1 + ( (random.randint(1, 50)) / 100 )
     light_resist = 1 + ( (random.randint(1, 50)) / 100 )
@@ -107,6 +116,8 @@ def mob_gen(request):
     armor = round(5 * dificulty_koeficient * (mob_lvl))
 
     dmg_koef = round(mob_lvl * dificulty_koeficient)
+    if dmg_koef <= 1:
+        dmg_koef = 2
     max_dmg_random = random.sample(range(1, 3), 1)[0]
 
     min_dmg = random.randint(1, dmg_koef) 

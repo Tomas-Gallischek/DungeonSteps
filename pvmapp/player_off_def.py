@@ -49,7 +49,7 @@ def player_attack(request):
 
 # VÝPOČET ÚTOKU
     if player_weapon is None:
-        weapon_dmg = 1
+        weapon_dmg = 2
     else:
         weapon_dmg = random.randint(player_weapon.min_dmg, player_weapon.max_dmg)
     atr_dmg = dmg_atribut_value / 10
@@ -62,11 +62,14 @@ def player_attack(request):
     attack_type = player_weapon.item_type if player_weapon else NONE
 
 
-
     if random.randint(1, 100) <= crit_chance:
         final_attack = round(final_attack * (2 + crit_dmg_bonus))
         attack_status = "kritický zásah"
 
+
+    if final_attack <= 20:
+        final_attack = random.randint(40, 80)
+        attack_status = "normální zásah"
 
     p_attack = {
         'final_attack': final_attack,
@@ -102,8 +105,17 @@ def player_deffence(request):
 
 
 # IMPORT EQP NENÍ POTŘEBA, PROTOŽE ARMOR SI BERU Z BONUSŮ
-    armor = player_bonus.armor_suma
-    bonus_armor = round(armor / 10)
+    if player_bonus.armor_suma is None:
+        armor = 1
+    if player_bonus.armor_suma <= 0:
+        armor = 1
+    
+    armor = round(player_bonus.armor_suma)
+    
+    if armor <= 20: # <-- jinak by nefungoval následující generátor čísla 
+        bonus_armor = 2
+    else:
+        bonus_armor = round(armor / 10)
     random_armor = round(random.randint(1, bonus_armor)) # IMPLMENTACE NÁHODNÉHO ARMORU - 10% VARIACE - KVŮLI VĚTŠÍ PESTROSTI SOUBOJŮ
     armor += random_armor
 

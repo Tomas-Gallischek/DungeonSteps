@@ -6,12 +6,12 @@ import random
 def loot_gen(request, mob):
 
 # VYGENEROVÁNÍ ZÍSKANÝCH XP
-    base_xp_loot = mob['lvl'] * mob['dificulty_koeficient'] * 10
+    base_xp_loot = mob['lvl'] * mob['dificulty_koeficient'] * 2
     xp_bonus = 1 + (random.randint(1, 20) / 100)  # max 1.2 (= +20% XP)
     base_xp_loot *= xp_bonus
 
 # VYGENEROVÁNÍ ZÍSKANÝCH GOLDŮ
-    base_gold_loot = mob['lvl'] * mob['dificulty_koeficient']
+    base_gold_loot = mob['lvl'] * mob['dificulty_koeficient'] * 4
     gold_bonus = 1 + (random.randint(1, 20) / 100)  # max 1.5 (= +50% gold)
     base_gold_loot *= gold_bonus
 

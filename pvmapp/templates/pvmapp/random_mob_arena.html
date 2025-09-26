@@ -3,6 +3,10 @@
 {% block content %}
 <h1>Souboj s náhodnou příšerou</h1>
 
+<form action="">
+    <button type="submit" formaction="{% url 'random-mob-fight-url' %}">- DALŠÍ SOUBOJ -</button>
+</form>
+
 {% if loot %}
     <h2><b>Kořist:</b></h2>
     <p>XP: {{ loot.xp }}</p>

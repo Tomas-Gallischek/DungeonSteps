@@ -46,6 +46,10 @@ def mob_attack(request, mob):
         final_attack = round(final_attack * kriticke_poskozeni)
         attack_status = "kritický zásah"
 
+    if final_attack <= 20:
+        final_attack = random.randint(20, 40)
+        attack_status = "normální zásah"
+
     m_attack = {
         'final_attack': final_attack,
         'attack_status': attack_status,
@@ -68,7 +72,11 @@ def mob_deffence(request, mob):
     # bezvedomi_resist_procenta_it_bonus = 
 
     armor = mob['armor']
-    bonus_armor = round(armor / 10)
+
+    if armor <= 20: # <-- jinak by nefungoval následující generátor čísla 
+        bonus_armor = 2
+    else:
+        bonus_armor = round(armor / 10)
     random_armor = round(random.randint(1, bonus_armor)) # IMPLMENTACE NÁHODNÉHO ARMORU - 10% VARIACE - KVŮLI VĚTŠÍ PESTROSTI SOUBOJŮ
     armor += random_armor
 
