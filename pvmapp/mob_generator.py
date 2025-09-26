@@ -67,26 +67,26 @@ def mob_gen(request):
     user_lvl = XP_LVL.objects.get(hrac=user).lvl
     name = random.choice(monster_names)
     mob_id = random.randint(1000, 99999)
-    dificulty_koeficient = random.randint(1, 5)
+    dificulty_koeficient = random.uniform(1, 3)
     mob_lvl_minus = user_lvl - 3
     mob_lvl_plus = user_lvl + 3
     mob_lvl = random.randint(mob_lvl_minus, mob_lvl_plus)
 
     dmg_atr = random.choice([choice[0] for choice in ATRIBUTS_CHOICES if choice[0] != 'none'])
 
-    str = (random.randint(1, 10) * dificulty_koeficient) * mob_lvl
+    str = round((random.randint(1, 5) * dificulty_koeficient) * mob_lvl)    
     if dmg_atr == 'strength':
         str = str + (str * 2)
-    dex = (random.randint(1, 10) * dificulty_koeficient) * mob_lvl
+    dex = round((random.randint(1, 5) * dificulty_koeficient) * mob_lvl)    
     if dmg_atr == 'dexterity':
         dex = dex + (dex * 2)
-    int = (random.randint(1, 10) * dificulty_koeficient) * mob_lvl
+    int = round((random.randint(1, 5) * dificulty_koeficient) * mob_lvl)    
     if dmg_atr == 'intelligence':
         int = int + (int * 2)
-    vit = (random.randint(1, 20) * dificulty_koeficient) * mob_lvl
-    luck = (random.randint(1, 10) * dificulty_koeficient) * mob_lvl
+    vit = round((random.randint(1, 10) * dificulty_koeficient) * mob_lvl)
+    luck = round((random.randint(1, 5) * dificulty_koeficient) * mob_lvl)   
 
-    hp = ((100 + (vit * 5)) * dificulty_koeficient) * mob_lvl
+    hp = round(((100 + (vit * 5)) * dificulty_koeficient) * round(mob_lvl/2))
 
     magic_resist = 1 + ( (random.randint(1, 50)) / 100 )
     light_resist = 1 + ( (random.randint(1, 50)) / 100 )
@@ -94,51 +94,53 @@ def mob_gen(request):
     otrava_resist = 1 + ( (random.randint(1, 50)) / 100 )
     bezvedomi_resist = 1 + ( (random.randint(1, 50)) / 100 )
 
-    poskozeni_schopnosti = 1 + (random.randint(1, 10) / 10)
-    poskozeni_utokem = 1 + (random.randint(1, 30) / 10)
+    poskozeni_schopnosti = 1 + (random.randint(1, 20) / 100) # max 1.2 (= +20% dmg schopností)
+    poskozeni_utokem = 1 + (random.randint(1, 40) / 100) # max 1.4 (= +40% dmg)
     sance_na_otravu = 1 + ( (random.randint(1, 50)) / 100 )
     sance_na_bezvedomi = 1 + ( (random.randint(1, 50)) / 100 )
 
     sance_na_kriticky_utok = (luck * 5 ) / mob_lvl
     if sance_na_kriticky_utok > 50:
         sance_na_kriticky_utok = 50
-    kriticke_poskozeni = ( (random.randint(1, 50)) / 100 )
+    kriticke_poskozeni = 2 + ( (random.randint(1, 50)) / 100 )
 
-    armor = 5 * dificulty_koeficient * (mob_lvl * 2)
+    armor = round(5 * dificulty_koeficient * (mob_lvl))
 
-    dmg_koef = mob_lvl * dificulty_koeficient
-    max_dmg_random = random.sample(range(1, 5), 1)[0]
+    dmg_koef = round(mob_lvl * dificulty_koeficient)
+    max_dmg_random = random.sample(range(1, 3), 1)[0]
 
     min_dmg = random.randint(1, dmg_koef) 
     max_dmg = (min_dmg * max_dmg_random) + dificulty_koeficient #Kdyby byl max_dmg_random 1 
 
 
-    Mobs.objects.create(
-        name=name,
-        mob_id=mob_id,
-        dificulty_koeficient=dificulty_koeficient,
-        lvl=mob_lvl,
-        hp=hp,
-        str=str,
-        dex=dex,
-        int=int,
-        vit=vit,
-        luck=luck,
-        dmg_atr=dmg_atr,
-        magic_resist=magic_resist,
-        light_resist=light_resist,
-        heavy_resist=heavy_resist,
-        otrava_resist=otrava_resist,
-        bezvedomi_resist=bezvedomi_resist,
-        poskozeni_schopnosti=poskozeni_schopnosti,
-        poskozeni_utokem=poskozeni_utokem,
-        sance_na_otravu=sance_na_otravu,
-        sance_na_bezvedomi=sance_na_bezvedomi,
-        sance_na_kriticky_utok=sance_na_kriticky_utok,
-        kriticke_poskozeni=kriticke_poskozeni,
-        armor=armor,
-        min_dmg=min_dmg,
-        max_dmg=max_dmg
-    )
+    mob = {
+        'name': name,
+        'mob_id': mob_id,
+        'dificulty_koeficient': dificulty_koeficient,
+        'lvl': mob_lvl,
+        'hp': hp,
+        'str': str,
+        'dex': dex,
+        'int': int,
+        'vit': vit,
+        'luck': luck,
+        'dmg_atr': dmg_atr,
+        'magic_resist': magic_resist,
+        'light_resist': light_resist,
+        'heavy_resist': heavy_resist,
+        'otrava_resist': otrava_resist,
+        'bezvedomi_resist': bezvedomi_resist,
+        'poskozeni_schopnosti': poskozeni_schopnosti,
+        'poskozeni_utokem': poskozeni_utokem,
+        'sance_na_otravu': sance_na_otravu,
+        'sance_na_bezvedomi': sance_na_bezvedomi,
+        'sance_na_kriticky_utok': sance_na_kriticky_utok,
+        'kriticke_poskozeni': kriticke_poskozeni,
+        'armor': armor,
+        'min_dmg': min_dmg,
+        'max_dmg': max_dmg
+    }
 
     print(f"Generován mob: {name}, ID: {mob_id}, OBTÍŽNOST: {dificulty_koeficient}, Úroveň: {mob_lvl}, Síla: {str}, Obratnost: {dex}, Inteligence: {int}, Vitalita: {vit}, Štěstí: {luck}, HP: {hp}, Zbraň: {min_dmg}-{max_dmg} DMG, Atribut poškození: {dmg_atr}")
+
+    return mob

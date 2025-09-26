@@ -590,7 +590,7 @@ class EQP(models.Model):
 class Fight(models.Model):
     fight_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(Playerinfo, on_delete=models.CASCADE)
-    mob = models.ForeignKey(Mobs, on_delete=models.CASCADE)
+    mob = models.CharField(max_length=100, default="Neznámý nepřítel", blank=True, null=True)
     winner = models.CharField(max_length=50, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -600,13 +600,20 @@ class Fight(models.Model):
 class FightLogEntry(models.Model):
     fight = models.ForeignKey(Fight, on_delete=models.CASCADE, related_name='logs')
     round_number = models.IntegerField(default=1, blank=True, null=True)
+    event_type = models.CharField(max_length=50, blank=True, null=True)
+    attack_type = models.CharField(max_length=50, blank=True, null=True)
+    attack_status = models.CharField(max_length=50, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    description = models.TextField()
     player_hp_before = models.IntegerField(null=True, blank=True)
     player_hp_after = models.IntegerField(null=True, blank=True)
     mob_hp_before = models.IntegerField(null=True, blank=True)
     mob_hp_after = models.IntegerField(null=True, blank=True)
-    event_type = models.CharField(max_length=50)
+    dmg = models.IntegerField(null=True, blank=True)
+    attack_value = models.FloatField(("Útočná hodnota"), null=True, blank=True)
+    defence_value = models.FloatField(("Obranná hodnota"), null=True, blank=True)
+    base_armor = models.FloatField(("Základní obrana"), null=True, blank=True)
+    minus_hp_percent = models.FloatField(("Procentuální snížení HP"), null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Kolo {self.round_number} - {self.event_type}"

@@ -3,43 +3,13 @@ import random
 from .models import Mobs
 from django.contrib.auth.decorators import login_required
 
-
 @login_required
-def mob_info(mob_id):
-    mob = Mobs.objects.get(mob_id=mob_id)
-    name = mob.name
-    lvl = mob.lvl
+def mob_attack(request, mob):
+    str = mob['str']
+    dex = mob['dex']
+    int = mob['int']
 
-    hp = mob.hp
-    str = mob.str
-    dex = mob.dex
-    int = mob.int
-    vit = mob.vit
-    luck = mob.luck
-    armor = mob.armor
-
-    m_info = {
-        'name': name,
-        'lvl': lvl,
-        'hp': hp,
-        'str': str,
-        'dex': dex,
-        'int': int,
-        'vit': vit,
-        'luck': luck,
-        'armor': armor,
-    }
-
-    return m_info
-
-@login_required
-def mob_attack(request, mob_id):
-    mob = Mobs.objects.get(mob_id=mob_id)
-    str = mob.str
-    dex = mob.dex
-    int = mob.int
-
-    dmg_atr = mob.dmg_atr
+    dmg_atr = mob['dmg_atr']
 
     if dmg_atr == 'strength':
         dmg_atr_value = str / 10
@@ -54,17 +24,17 @@ def mob_attack(request, mob_id):
         dmg_atr_value = 1
         attack_type = None
 
-    poskozeni_schopnosti = mob.poskozeni_schopnosti
-    poskozeni_utokem = mob.poskozeni_utokem
-    sance_na_otravu = mob.sance_na_otravu
-    sance_na_bezvedomi = mob.sance_na_bezvedomi
-    sance_na_kriticky_utok = mob.sance_na_kriticky_utok
-    kriticke_poskozeni = mob.kriticke_poskozeni
+    poskozeni_schopnosti = mob['poskozeni_schopnosti']
+    poskozeni_utokem = mob['poskozeni_utokem']
+    sance_na_otravu = mob['sance_na_otravu']
+    sance_na_bezvedomi = mob['sance_na_bezvedomi']
+    sance_na_kriticky_utok = mob['sance_na_kriticky_utok']
+    kriticke_poskozeni = mob['kriticke_poskozeni']
 
 
 
-    min_dmg = round(mob.min_dmg)
-    max_dmg = round(mob.max_dmg)
+    min_dmg = round(mob['min_dmg'])
+    max_dmg = round(mob['max_dmg'])
 
     random_dmg = random.randint(min_dmg, max_dmg)
 
@@ -73,7 +43,7 @@ def mob_attack(request, mob_id):
 
 
     if random.randint(1, 100) <= sance_na_kriticky_utok:
-        final_attack = round(final_attack * (2 + kriticke_poskozeni))
+        final_attack = round(final_attack * kriticke_poskozeni)
         attack_status = "kritický zásah"
 
     m_attack = {
@@ -86,19 +56,18 @@ def mob_attack(request, mob_id):
 
 
 @login_required
-def mob_deffence(request, mob_id):
-    mob = Mobs.objects.get(mob_id=mob_id)
+def mob_deffence(request, mob):
 
-    hp = mob.hp
+    hp = mob['hp']
 
-    heavy_resist = mob.heavy_resist + (mob.str / 1000)
-    magic_resist = mob.magic_resist + (mob.int / 1000)
-    light_resist = mob.light_resist + (mob.dex / 1000)
+    heavy_resist = mob['heavy_resist'] + (mob['str'] / 1000)
+    magic_resist = mob['magic_resist'] + (mob['int'] / 1000)
+    light_resist = mob['light_resist'] + (mob['dex'] / 1000)
     # light_resist_procenta_it_bonus =
     # otrava_resist_procenta_it_bonus = 
     # bezvedomi_resist_procenta_it_bonus = 
 
-    armor = mob.armor
+    armor = mob['armor']
     bonus_armor = round(armor / 10)
     random_armor = round(random.randint(1, bonus_armor)) # IMPLMENTACE NÁHODNÉHO ARMORU - 10% VARIACE - KVŮLI VĚTŠÍ PESTROSTI SOUBOJŮ
     armor += random_armor

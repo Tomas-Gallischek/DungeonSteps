@@ -1,4 +1,7 @@
+from email.mime import base
+from multiprocessing import Value
 import random
+import re
 from .models import Mobs
 from hracapp.models import Atributs, Playerinfo, Fight, FightLogEntry
 import uuid
@@ -6,65 +9,64 @@ from .mobs_off_def import mob_attack, mob_deffence
 from .player_off_def import player_attack, player_deffence
 
 
-def pvm_fight_funkce(request):
+def pvm_fight_funkce(request, mob):
     WINNER = None
     user = request.user
     atributs = Atributs.objects.get(hrac=user)
-    all_mobs = Mobs.objects.all()
-    mob = random.choice(all_mobs)
-    mob_id = mob.mob_id
+    mob_id = mob['mob_id']
+    remaining_hp_percent = 100
     
     # Vytvoření instance Fight namísto proměnné
     fight = Fight.objects.create(
         user=user,
-        mob=mob,
+        mob=mob['name'],
     )
     
-    print(f"Začíná souboj mezi hráčem {user} a příšerou {mob.name}")
+    print(f"Začíná souboj mezi hráčem {user} a příšerou {mob['name']} (ID: {mob_id})")
 
 
     round_number = 0
-    mob_hp = mob.hp
+    mob_hp = mob['hp']
+    mob_default_hp = mob_hp
     player_hp = atributs.suma_hp
+    player_default_hp = player_hp
 
     player_iniciativa = random.randint(1, 200)
     mob_iniciativa = random.randint(1, 200)
 
     # Log začátku souboje
     FightLogEntry.objects.create(
-        fight=fight,  # Propojení s instancí Fight
-        # Odstraněny proměnné 'user' a 'mob'
+        fight=fight,
         round_number=round_number+1,
-        description=f"Souboj začíná mezi hráčem {user} a příšerou {mob.name}.",
+        description=f"Souboj začíná mezi hráčem {user} a příšerou {mob['name']}.",
         event_type="fight_start"
     )
-
     print("Úspěšné vytvoření logu začátku souboje.")
+    
     while mob_hp > 0 and player_hp > 0:
-        round_number += 1
-        print(f"round_number č. {round_number}")       
+        round_number += 1     
 
         if player_iniciativa >= mob_iniciativa:
-            mob_hp = utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp)
+            mob_hp = utok_hrace(request, mob, mob_hp, fight, round_number, player_hp, mob_default_hp, player_default_hp, remaining_hp_percent)
             if mob_hp <= 0:
                 WINNER = str(user)
-                print(f"Příšera {mob.name} byla poražena!")
+                print(f"Příšera {mob['name']} byla poražena!")
                 break
-            player_hp = utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp)
+            player_hp = utok_prisery(request, mob, player_hp, fight, round_number, mob_hp, mob_default_hp, player_default_hp, remaining_hp_percent)
             if player_hp <= 0:
-                WINNER = str(mob.name)
+                WINNER = str(mob['name'])
                 print(f"Hráč {user} byl poražen!")
                 break
         if mob_iniciativa > player_iniciativa:
-            player_hp = utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp)
+            player_hp = utok_prisery(request, mob, player_hp, fight, round_number, mob_hp, mob_default_hp, player_default_hp, remaining_hp_percent)
             if player_hp <= 0:
-                WINNER = str(mob.name)
+                WINNER = str(mob['name'])
                 print(f"Hráč {user} byl poražen!")
                 break
-            mob_hp = utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp)
+            mob_hp = utok_hrace(request, mob, mob_hp, fight, round_number, player_hp, mob_default_hp, player_default_hp, remaining_hp_percent)
             if mob_hp <= 0:
                 WINNER = str(user)
-                print(f"Příšera {mob.name} byla poražena!")
+                print(f"Příšera {mob['name']} byla poražena!")
                 break
     if WINNER:
         winner_name = WINNER
@@ -85,11 +87,9 @@ def pvm_fight_funkce(request):
     return fight.fight_id
 
 
-def utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp):
-    print("Hráč útočí")
-
+def utok_hrace(request, mob, mob_hp, fight, round_number, player_hp, mob_default_hp, player_default_hp, remaining_hp_percent):
     p_attack = player_attack(request)
-    m_deffence = mob_deffence(request, mob_id)
+    m_deffence = mob_deffence(request, mob)
 
     attack_status = p_attack['attack_status']
     attack_type = p_attack['attack_type']
@@ -110,27 +110,35 @@ def utok_hrace(request, mob_id, mob_hp, fight, round_number, player_hp):
     mob_hp_change = round(dmg)
     mob_hp_after = mob_hp_before - mob_hp_change
     mob_hp = mob_hp_after
+    minus_hp_percent = round((mob_hp_change / mob_default_hp) * 100)
 
-    # Vytvoření záznamu do logu
+
+    remaining_hp_percent = round((mob_hp_after / mob_default_hp) * 100)
+
+
     FightLogEntry.objects.create(
         fight=fight,
-        # Odstraněny proměnné 'user' a 'mob'
         round_number=round_number,
-        description=f"Útok hráče: {request.user} Způsobené poškození: {mob_hp_change}, jednalo se o {attack_status} / {attack_type}, životy příšery před útokem: {mob_hp_before}, životy příšery po útoku: {mob_hp_after}",
+        event_type="player_attack",
+        attack_type=attack_type,
+        attack_status=attack_status,
         player_hp_before=player_hp,
         player_hp_after=player_hp,
         mob_hp_before=mob_hp_before,
         mob_hp_after=mob_hp_after,
-        event_type="player_attack"
-    )
+        dmg=dmg,
+        attack_value = p_attack['final_attack'],
+        defence_value = p_attack['final_attack'] - dmg, # protože záleží, čím se obránce brání
+        base_armor = mob['armor'],
+        minus_hp_percent = minus_hp_percent,
+        description=f"Útok hráče: {request.user} Způsobené poškození: {mob_hp_change}, jednalo se o {attack_status} / {attack_type}, životy příšery před útokem: {mob_hp_before}, životy příšery po útoku: {mob_hp_after}, Základní obrana: {mob['armor']}, HP = -{minus_hp_percent}% ({remaining_hp_percent}% zbývá)"
+    )   
     return mob_hp
 
 
-def utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp):
-    print("Příšera útočí")
+def utok_prisery(request, mob, player_hp, fight, round_number, mob_hp, mob_default_hp, player_default_hp, remaining_hp_percent):
 
-    mob_name = Mobs.objects.get(mob_id=mob_id)
-    m_attack = mob_attack(request, mob_id)
+    m_attack = mob_attack(request, mob)
     p_deffence = player_deffence(request)
 
     attack_status = m_attack['attack_status']
@@ -152,18 +160,27 @@ def utok_prisery(request, mob_id, player_hp, fight, round_number, mob_hp):
     player_hp_change = round(dmg)
     player_hp_after = player_hp_before - player_hp_change
     player_hp = player_hp_after
+    minus_hp_percent = round((player_hp_change / player_default_hp) * 100)
+
+    remaining_hp_percent = round((player_hp_after / player_default_hp) * 100)
 
     # Vytvoření záznamu do logu
     FightLogEntry.objects.create(
         fight=fight,
-        # Odstraněny proměnné 'user' a 'mob'
         round_number=round_number,
-        description=f"Útok příšery: {mob_name} Způsobené poškození: {player_hp_change}, jednalo se o {attack_status} / {attack_type}, životy hráče před útokem: {player_hp_before}, životy hráče po útoku: {player_hp_after}",
+        event_type="mob_attack",
+        attack_type=attack_type,
+        attack_status=attack_status,
         player_hp_before=player_hp_before,
         player_hp_after=player_hp_after,
         mob_hp_before=mob_hp,
         mob_hp_after=mob_hp,
-        event_type="mob_attack"
+        dmg=dmg,
+        attack_value = m_attack['final_attack'],
+        defence_value = m_attack['final_attack'] - dmg, # protože záleží, čím se obránce brání
+        base_armor = p_deffence['armor_normal'],
+        minus_hp_percent = minus_hp_percent,
+        description=f"Útok příšery: {mob['name']} Způsobené poškození: {player_hp_change}, jednalo se o {attack_status} / {attack_type}, životy hráče před útokem: {player_hp_before}, životy hráče po útoku: {player_hp_after}, Obrana: {p_deffence['armor_normal']} HP = -{minus_hp_percent}% ({remaining_hp_percent}% zbývá)"
     )
 
     return player_hp
