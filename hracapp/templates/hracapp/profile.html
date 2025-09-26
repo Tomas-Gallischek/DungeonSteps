@@ -17,7 +17,7 @@
 <p>PROGRES: {{ xp_nasetrene }}/{{ XP_potrebne_next }}</p>
 <p>XP: <span id="xp-value">{{ XP_aktual }}</span></p>
 
-<form action="{% url 'plus_xp-url' %}" method="POST">
+<form action="{% url 'xp_admin_plus-url' %}" method="POST">
 {% csrf_token %}
 Počet XP: <input type="number" name="new_xp" min="1" value="1">
 <button type="submit">Získat XP</button>

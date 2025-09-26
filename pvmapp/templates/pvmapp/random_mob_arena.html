@@ -3,6 +3,12 @@
 {% block content %}
 <h1>Souboj s náhodnou příšerou</h1>
 
+{% if loot %}
+    <h2><b>Kořist:</b></h2>
+    <p>XP: {{ loot.xp }}</p>
+    <p>Zlato: {{ loot.gold }}</p>
+{% endif %}
+
 <p>Výsledek souboje: {{ winner_name }} vyhrál(a)!</p>
 <p>Záznam souboje:</p>
 {% for entry in fight_log_entries %}

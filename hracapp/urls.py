@@ -3,7 +3,7 @@ from django.urls import path
 
 from .economy import buy_or_sell, buy_or_sell_convert
 from . import views
-from .xp_lvl import plus_xp
+from .xp_lvl import xp_admin_plus
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView, LogoutView
 from . import xp_lvl, economy, update_atributs
@@ -13,7 +13,7 @@ urlpatterns = [
     path('profile', views.profile, name='profile-url'),
     path('eqp-url/<int:item_id>/', views.equip_item, name='eqp-url'),
     path('de-eqp-url/<int:item_id>/', views.dequip_item, name='de-eqp-url'),
-    path('plus_xp', xp_lvl.plus_xp, name='plus_xp-url'),
+    path('xp_admin_plus', xp_lvl.xp_admin_plus, name='xp_admin_plus-url'),
     path('gold_transaction', economy.buy_or_sell_convert, name='gold_transaction-url'),
     path('atributs-update', update_atributs.atr_update, name='atributs-update-url'),
     path('sell_item/<int:item_id>/', economy.sell_item, name='sell_item-url'),
