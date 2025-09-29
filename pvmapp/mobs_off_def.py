@@ -1,6 +1,6 @@
 from pickle import NONE
 import random
-from .models import Mobs
+from .models import Mobs_random
 from django.contrib.auth.decorators import login_required
 
 @login_required

@@ -1,5 +1,6 @@
 from django.contrib import admin
 
-from .models import Mobs
+from .models import Mobs_random, Mobs_dungeons
 
-admin.site.register(Mobs)
+admin.site.register(Mobs_random)
+admin.site.register(Mobs_dungeons)

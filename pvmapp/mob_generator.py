@@ -1,5 +1,5 @@
 import random
-from .models import Mobs
+from .models import Mobs_random
 import random
 from hracapp.models import XP_LVL
 

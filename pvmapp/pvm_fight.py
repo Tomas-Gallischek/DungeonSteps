@@ -2,7 +2,7 @@ from email.mime import base
 from multiprocessing import Value
 import random
 import re
-from .models import Mobs
+from .models import Mobs_random
 from hracapp.models import Atributs, Playerinfo, Fight, FightLogEntry
 import uuid
 from .mobs_off_def import mob_attack, mob_deffence

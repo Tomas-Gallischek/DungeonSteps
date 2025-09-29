@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Sum
 import uuid
-from pvmapp.models import Mobs
+from pvmapp.models import Mobs_random
 
 # HLAVNÍ DATABÁZE HRÁČE:
 class Playerinfo(AbstractUser):

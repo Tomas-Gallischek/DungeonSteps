@@ -1,3 +1,4 @@
+from math import floor
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -12,13 +13,39 @@ ATRIBUTS_CHOICES = (
     ('none', 'Žádný')
 )
 
-class Mobs(models.Model):
+class Mobs_random(models.Model):
 
-#Přidat ještě něco jako "původ"
+    mob_id = models.IntegerField(("ID Monstra"), unique=True)
+    name = models.CharField(max_length=100)
+    img = models.ImageField(upload_to='mobs_images/', blank=True, null=True)
+    description = models.TextField(("Popis"), blank=True, null=True)
+    locations = models.TextField(("Lokace"), blank=True, null=True)
+
+# časem implementovat
+    gold_loot_bonus = models.FloatField(("Bonus ke zlatým"), default=0, blank=True, null=True)
+    xp_loot_bonus = models.FloatField(("Bonus k XP"), default=0, blank=True, null=True)
+    items_loot_bonus = models.FloatField(("Bonus k předmětům"), default=0, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.name    
+    
+
+class Mobs_dungeons(models.Model):
+
+    dungeon = models.IntegerField(("Název Dungeonu"), blank=True, null=True)
+    floor = models.IntegerField(("Patro Dungeonu"), blank=True, null=True)
+
     name = models.CharField(max_length=100)
     mob_id = models.IntegerField(("ID Monstra"), unique=True)
+    img = models.ImageField(upload_to='mobs_images/', blank=True, null=True)
+    description = models.TextField(("Popis"), blank=True, null=True)
     dificulty_koeficient = models.IntegerField(("Obtížnost"), default=1, blank=True, null=True)
     lvl = models.IntegerField(("Úroveň"), default=1, blank=True, null=True)
+
+    gold_loot_bonus = models.FloatField(("Bonus ke zlatým"), default=0, blank=True, null=True)
+    xp_loot_bonus = models.FloatField(("Bonus k XP"), default=0, blank=True, null=True)
+    items_loot_bonus = models.FloatField(("Bonus k předmětům"), default=0, blank=True, null=True)
 
     hp = models.FloatField(("Životy"), default=1, blank=True, null=True)
     str = models.FloatField(("Síla"), default=1, blank=True, null=True)
@@ -50,4 +77,4 @@ class Mobs(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return self.name    
