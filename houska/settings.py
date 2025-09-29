@@ -124,6 +124,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# MEDIA FILES (nastavení pro uživatelsky nahrané soubory, např. obrázky)
+# Ukládací složka pro soubory. BASE_DIR je cesta k hlavnímu adresáři projektu.
+MEDIA_ROOT = BASE_DIR / 'media' 
+
+# Veřejná URL adresa pro přístup k těmto souborům.
+MEDIA_URL = 'media/'
+
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
