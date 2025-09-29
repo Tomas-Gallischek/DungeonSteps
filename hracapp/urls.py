@@ -1,7 +1,7 @@
 from urllib import request
 from django.urls import path
 
-from .economy import buy_or_sell, buy_or_sell_convert
+from .economy import buy_or_sell, sell_item
 from . import views
 from .xp_lvl import xp_admin_plus
 from django.contrib.auth import views as auth_views

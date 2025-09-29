@@ -47,6 +47,7 @@ Počet XP: <input type="number" name="new_xp" min="1" value="1">
 
 <p>HP: <span id="hp-value">{{ suma_hp }}</span></p>
 <p></p>
+
 <p>Strength: <span id="strength-value">{{ suma_strength }}</span></p>
 <form action="{% url 'atributs-update-url' %}" method="POST">
 {% csrf_token %}
