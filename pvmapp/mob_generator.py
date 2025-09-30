@@ -113,7 +113,7 @@ def mob_gen(request):
         sance_na_kriticky_utok = 50
     kriticke_poskozeni = 2 + ( (random.randint(1, 50)) / 100 )
 
-    armor = round(5 * dificulty_koeficient * (mob_lvl))
+    armor = round(2 * dificulty_koeficient * (mob_lvl))
 
     dmg_koef = round(mob_lvl * dificulty_koeficient)
     if dmg_koef <= 1:
