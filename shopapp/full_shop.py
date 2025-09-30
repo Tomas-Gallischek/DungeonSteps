@@ -21,7 +21,7 @@ def full_shop(request):
             hrac=user,
             item_id=new_item['item_id'],
             name=new_item['name'],
-            img_init=new_item['img_init'],
+            img=new_item['img'],
             description=new_item['description'],
             level_required=new_item['level_required'],
             level_stop=new_item['level_stop'],

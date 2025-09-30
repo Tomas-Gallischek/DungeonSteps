@@ -51,7 +51,7 @@ def shop_buy(request, item_id):
             hrac=user,
             item_id=item_to_buy.item_id,
             name=item_to_buy.name,
-            img_init=item_to_buy.img_init,
+            img=item_to_buy.img,
             description=item_to_buy.description,
             level_required=item_to_buy.level_required,
             level_stop=item_to_buy.level_stop,

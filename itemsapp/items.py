@@ -38,7 +38,7 @@ def items_generator(request):
     name = new_item.name
     id_random = random.randint(1, 999999)
     item_id = id_random
-    img_init = new_item.img_init
+    img = new_item.img
     description = new_item.description
     level_required = new_item.level_required
     level_stop = new_item.level_stop
@@ -302,7 +302,7 @@ def items_generator(request):
     new_item = {
         'name': name,
         'item_id': item_id,
-        'img_init': img_init,
+        'img': img,
         'description': description,
         'level_required': level_required,
         'level_stop': level_stop,

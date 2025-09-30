@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -395,7 +396,7 @@ class ShopOffer(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='shop_offer', blank=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     item_id = models.IntegerField(default=0, blank=True, null=True)
-    img_init = models.CharField(max_length=200, blank=True, null=True)
+    img = models.ImageField(blank=True, null=True)
     description = models.TextField(max_length=500, blank=True, null=True)
     level_required = models.IntegerField(default=1, blank=True, null=True)
     level_stop = models.IntegerField(default=10, blank=True, null=True)
@@ -440,7 +441,6 @@ class ShopOffer(models.Model):
     luk_bonus = models.IntegerField(default=0, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.img_init = f"{self.name}.png"
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -456,7 +456,7 @@ class INV(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='inventory', blank=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     item_id = models.IntegerField(default=0, blank=True, null=True)
-    img_init = models.CharField(max_length=200, blank=True, null=True)
+    img = models.ImageField(blank=True, null=True)
     description = models.TextField(max_length=500, blank=True, null=True)
     level_required = models.IntegerField(default=1, blank=True, null=True)
     level_stop = models.IntegerField(default=10, blank=True, null=True)
@@ -526,7 +526,7 @@ class EQP(models.Model):
     hrac = models.ForeignKey(Playerinfo, on_delete=models.CASCADE, related_name='eqp', blank=True, null=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     item_id = models.IntegerField(default=0, blank=True, null=True)
-    img_init = models.CharField(max_length=200, blank=True, null=True)
+    img = models.ImageField(blank=True, null=True)
     description = models.TextField(max_length=500, blank=True, null=True)
     level_required = models.IntegerField(default=1, blank=True, null=True)
     level_stop = models.IntegerField(default=10, blank=True, null=True)
