@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Mapa dungeonu</h1>
+
+<B>ZÁKLADNÍ TÁBOR MONSTER:</B>
+<form action="{% url 'map-base-camp-url' %}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="locations" value="1">
+<button type="submit">VSTOUPIT</button>
+</form>
+
+{% endblock %}

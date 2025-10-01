@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect, render
 from django.shortcuts import render, redirect
 from .rasy_povolani import rasa_povolani_bonus_create
-from hracapp.models import EQP, INV, XP_LVL, Atributs, Character_bonus, Economy, Playerinfo, ShopOffer, XP_Log
+from hracapp.models import EQP, INV, XP_LVL, Atributs, Character_bonus, Dungeon_progress, Economy, Playerinfo, ShopOffer, XP_Log
 from .forms import RegistrationForm
 from django.contrib.auth import login
 
@@ -27,6 +27,7 @@ def register(request):
             ShopOffer.objects.create(hrac=user)
             INV.objects.create(hrac=user)
             EQP.objects.create(hrac=user)
+            Dungeon_progress.objects.create(hrac=user)
             
             login(request, user)
             rasa_povolani_bonus_create(request) # <-- Načtení základních hodnot atributů

@@ -33,7 +33,7 @@ class Mobs_random(models.Model):
 
 class Mobs_dungeons(models.Model):
 
-    dungeon = models.IntegerField(("Název Dungeonu"), blank=True, null=True)
+    dungeon = models.IntegerField(("Číslo Dungeonu"), blank=True, null=True)
     floor = models.IntegerField(("Patro Dungeonu"), blank=True, null=True)
 
     name = models.CharField(max_length=100)

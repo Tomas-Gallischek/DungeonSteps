@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Vítejte v základním táboře</h1>
+
+{% for mob in relevant_mobs %}
+    <div>
+        <h2>{{ mob.name }}</h2>
+        <img src="{{ mob.img.url }}" alt="{{ mob.name }}">
+        <p>{{ mob.description }}</p>
+
+        <form action="{% url 'dungeon-mob-fight-url' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="mob_id" value="{{ mob.mob_id }}">
+            <button type="submit">Zahájit boj</button>
+        </form>
+    </div>
+{% endfor %}
+
+{% endblock %}

@@ -13,10 +13,16 @@ from .models import (
     ShopOffer,
     XP_Log,
     Fight,
+    Dungeon_progress,
 )
 
 
 # ==== INLINES ====
+
+class DungeonProgressInline(admin.StackedInline):
+    model = Dungeon_progress
+    can_delete = False
+    verbose_name_plural = 'Progres v dungeonech'
 
 class XPLVLInline(admin.StackedInline):
     model = XP_LVL
@@ -113,6 +119,7 @@ class PlayerinfoAdmin(UserAdmin):
         EQPInline,
         XP_LogInline,
         EconomyLogInline,
+        DungeonProgressInline,
     ]
 
 # ==== SAMOSTATNÁ REGISTRACE MODELU CHARACTER_BONUS ====
