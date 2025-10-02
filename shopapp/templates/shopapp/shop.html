@@ -20,12 +20,13 @@
 <h2>Nabídka zboží</h2>
 {% for item in items_in_shop %}
     <div>
-        <h3>{{ item.name }}</h3>
+        <h3><u>{{ item.name }}</u></h3>
 
-        {% if item.item_id %}
-            <p><strong>ID předmětu:</strong> {{ item.item_id }}</p>
+        {% if item.img %}
+            <img src="{{ item.img.url }}" alt="Obrázek položky" style="max-width: 200px; max-height: 200px;">
         {% endif %}
-
+        <P></P>
+        DETAILY:
         {% if item.level_required %}
             <p><strong>Požadovaná úroveň:</strong> {{ item.level_required }}</p>
         {% endif %}
