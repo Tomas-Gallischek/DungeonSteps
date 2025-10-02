@@ -95,6 +95,7 @@ Počet XP: <input type="number" name="new_xp" min="1" value="1">
 {% for item in inventory_items %}
 <div class="item-card">
 <h4>{{ item.name }}</h4>
+<img src="{{ item.img }}" alt="Obrázek položky" style="max-width: 200px; max-height: 200px;">
 <ul>
 {% for key, value in item.attributes.items %}
 <li><strong> {{ key|replace:"_: "|title }} :</strong> {{ value }}</li>
@@ -117,6 +118,7 @@ Počet XP: <input type="number" name="new_xp" min="1" value="1">
 {% for item in equipment_items %}
 <div class="item-card">
 <h4>{{ item.name }}</h4>
+<img src="{{ item.img }}" alt="Obrázek položky" style="max-width: 200px; max-height: 200px;">
 <ul>
 {% for key, value in item.attributes.items %}
 <li><strong> {{ key|replace:"_: "|title }} :</strong> {{ value }}</li>

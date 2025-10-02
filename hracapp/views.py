@@ -51,6 +51,7 @@ def profile(request):
         item_data = {
             'object': item, # Původní objekt pro případ, že ho potřebuješ v HTML
             'name': item.name,
+            'img': item.img,
             'attributes': get_non_empty_attributes(item)
         }
         prepared_inventory_items.append(item_data)
@@ -61,6 +62,7 @@ def profile(request):
         item_data = {
             'object': item,
             'name': item.name,
+            'img': item.img,
             'attributes': get_non_empty_attributes(item)
         }
         prepared_equipment_items.append(item_data)
